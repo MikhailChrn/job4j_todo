@@ -14,11 +14,18 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <!--https://stackoverflow.com/questions/30772333/how-to-change-hibernate-cfg-xml-file-path-through-maven-when-building-project-->
+
     <profiles>
         <profile>
             <id>test</id>
             <properties>
                 <liquibase.config>db/liquibase_test.properties</liquibase.config>
+                <db.driverClass>org.h2.Driver</db.driverClass>
+                <db.jdbcUrl>jdbc:h2:./testdb;MODE=PostgreSQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;</db.jdbcUrl>
+                <db.user></db.user>
+                <db.password></db.password>
+                <db.dialect>org.hibernate.dialect.H2Dialect</db.dialect>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -29,6 +36,11 @@
             <id>production</id>
             <properties>
                 <liquibase.config>db/liquibase.properties</liquibase.config>
+                <db.driverClass>org.postgresql.Driver</db.driverClass>
+                <db.jdbcUrl>jdbc:postgresql://127.0.0.1:5432/todo</db.jdbcUrl>
+                <db.user>todo</db.user>
+                <db.password>todo</db.password>
+                <db.dialect>org.hibernate.dialect.PostgreSQLDialect</db.dialect>
             </properties>
         </profile>
     </profiles>
