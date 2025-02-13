@@ -1,0 +1,17 @@
+<div th:fragment="header" xmlns:th="http://www.w3.org/1999/xhtml">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">job4j_todo</a>
+
+            <div class="navbar-nav me-auto" th:if="${user == null || user.fullName == 'Гость'}" style="float: right;">
+                <a class="nav-item nav-link" th:href="@{/users/register}">Регистрация</a>
+                <a class="nav-item nav-link" th:href="@{/users/login}">Войти</a>
+            </div>
+
+            <div class="navbar-nav me-auto" th:if="${user != null && user.fullName != 'Гость'}" style="float: right;">
+                <a class="nav-item nav-link" href="#" th:text="${user.fullName}"></a>
+                <a class="nav-item nav-link" th:href="@{/users/logout}">Выйти</a>
+            </div>
+        </div>
+    </nav>
+</div>
