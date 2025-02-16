@@ -3,7 +3,9 @@ package ru.job4j.repository;
 import lombok.AllArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
+import ru.job4j.exception.RepositoryException;
 import ru.job4j.model.Task;
 
 import java.util.Collection;
@@ -43,7 +45,7 @@ public class HebirnateTaskRepository implements TaskRepository {
     /**
      * Список всех задач
      *
-     * @return список задач
+     * @return всех список задач
      */
     @Override
     public Collection<Task> findAll() {
@@ -52,6 +54,56 @@ public class HebirnateTaskRepository implements TaskRepository {
         try {
             session.beginTransaction();
             result = session.createQuery("FROM Task")
+                    .getResultList();
+            session.getTransaction().commit();
+
+        } catch (Exception ex) {
+            session.getTransaction().rollback();
+
+        } finally {
+            session.close();
+        }
+
+        return result;
+    }
+
+    /**
+     * Список новых задач
+     *
+     * @return новых список задач
+     */
+    @Override
+    public Collection<Task> findNew() {
+        Session session = sessionFactory.openSession();
+        List<Task> result = List.of();
+        try {
+            session.beginTransaction();
+            result = session.createQuery("FROM Task T WHERE T.done = false")
+                    .getResultList();
+            session.getTransaction().commit();
+
+        } catch (Exception ex) {
+            session.getTransaction().rollback();
+
+        } finally {
+            session.close();
+        }
+
+        return result;
+    }
+
+    /**
+     * Список выполненных задач
+     *
+     * @return выполненных список задач
+     */
+    @Override
+    public Collection<Task> findCompleted() {
+        Session session = sessionFactory.openSession();
+        List<Task> result = List.of();
+        try {
+            session.beginTransaction();
+            result = session.createQuery("FROM Task T WHERE T.done = true")
                     .getResultList();
             session.getTransaction().commit();
 
@@ -127,19 +179,21 @@ public class HebirnateTaskRepository implements TaskRepository {
     @Override
     public Task save(Task task) {
         Session session = this.sessionFactory.openSession();
+        Integer taskId;
         try {
-            session.beginTransaction();
-            session.save(task);
-            session.getTransaction().commit();
+            Transaction transaction = session.beginTransaction();
+            taskId = (Integer) session.save(task);
+            transaction.commit();
 
         } catch (Exception ex) {
             session.getTransaction().rollback();
+            throw new RepositoryException(ex.getMessage());
 
         } finally {
             session.close();
         }
 
-        return task;
+        return taskId != null ? findById(taskId).get() : null;
     }
 
     /**

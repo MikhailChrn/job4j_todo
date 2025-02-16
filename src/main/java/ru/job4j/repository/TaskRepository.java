@@ -11,6 +11,10 @@ public interface TaskRepository {
 
     Collection<Task> findAll();
 
+    Collection<Task> findNew();
+
+    Collection<Task> findCompleted();
+
     Collection<Task> findByLikeDescription(String key);
 
     Collection<Task> findAllOrderByCreated();

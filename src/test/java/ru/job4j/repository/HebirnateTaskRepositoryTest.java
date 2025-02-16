@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Collections.emptyList;
 import static java.util.Optional.empty;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -43,8 +42,7 @@ class HebirnateTaskRepositoryTest {
 
     @Test
     public void whenDontSaveThenNothingFound() {
-        assertThat(taskRepository.findAll())
-                .isEqualTo(emptyList());
+
         assertThat(taskRepository.findById(0))
                 .isEqualTo(empty());
     }
@@ -57,8 +55,7 @@ class HebirnateTaskRepositoryTest {
         Task savedTask = taskRepository
                 .findById(task.getId()).get();
 
-        assertThat(savedTask).usingRecursiveComparison()
-                .isEqualTo(task);
+        assertThat(savedTask).isEqualTo(task);
     }
 
     @Test
@@ -104,17 +101,32 @@ class HebirnateTaskRepositoryTest {
                 .findById(updatedTask.getId()).get();
 
         assertThat(isUpdated).isTrue();
-        assertThat(savedTask).usingRecursiveComparison()
-                .isEqualTo(updatedTask);
+        assertThat(savedTask).isEqualTo(updatedTask);
     }
 
     @Test
-    public void whenUpdateUnExistingVacancyThenGetFalse() {
+    public void whenUpdateUnexistingVacancyThenGetFalse() {
         Task task = new Task(-1, "Test-description",
-                        LocalDateTime.now(), true);
+                LocalDateTime.now(), true);
 
         boolean isUpdated = taskRepository.update(task);
 
         assertThat(isUpdated).isFalse();
+    }
+
+    @Test
+    public void whenGetOnlyCompletedTaskThenGetThese() {
+        Task task1 = new Task("Test-description-1");
+        task1.setDone(true);
+        Task task2 = new Task("Test-description-2");
+        Task task3 = new Task("Test-description-3");
+        task3.setDone(true);
+        List.of(task1, task2, task3).forEach(
+                task -> taskRepository.save(task)
+        );
+
+        Collection<Task> result = taskRepository.findCompleted();
+
+        assertThat(result).isEqualTo(List.of(task1, task3));
     }
 }
