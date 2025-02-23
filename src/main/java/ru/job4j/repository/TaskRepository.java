@@ -11,9 +11,9 @@ public interface TaskRepository {
 
     Collection<Task> findAll();
 
-    Collection<Task> findNew();
+    Collection<Task> findAllNew();
 
-    Collection<Task> findCompleted();
+    Collection<Task> findAllCompleted();
 
     Collection<Task> findByLikeDescription(String key);
 

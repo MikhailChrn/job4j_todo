@@ -125,7 +125,7 @@ class HebirnateTaskRepositoryTest {
                 task -> taskRepository.save(task)
         );
 
-        Collection<Task> result = taskRepository.findCompleted();
+        Collection<Task> result = taskRepository.findAllCompleted();
 
         assertThat(result).isEqualTo(List.of(task1, task3));
     }

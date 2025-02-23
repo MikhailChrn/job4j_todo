@@ -3,7 +3,7 @@ package ru.job4j.dto;
 import lombok.Value;
 
 @Value
-public class InputTaskDto {
+public class CreateTaskDto {
 
     String description;
 

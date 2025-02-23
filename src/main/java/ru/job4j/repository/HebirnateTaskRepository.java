@@ -73,7 +73,7 @@ public class HebirnateTaskRepository implements TaskRepository {
      * @return новых список задач
      */
     @Override
-    public Collection<Task> findNew() {
+    public Collection<Task> findAllNew() {
         Session session = sessionFactory.openSession();
         List<Task> result = List.of();
         try {
@@ -98,7 +98,7 @@ public class HebirnateTaskRepository implements TaskRepository {
      * @return выполненных список задач
      */
     @Override
-    public Collection<Task> findCompleted() {
+    public Collection<Task> findAllCompleted() {
         Session session = sessionFactory.openSession();
         List<Task> result = List.of();
         try {
