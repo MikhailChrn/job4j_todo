@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import ru.job4j.dto.TaskDto;
 import ru.job4j.model.Task;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface TaskMapper {
 
     TaskDto getModelFromEntity(Task task);
