@@ -119,12 +119,12 @@ public class TaskController {
      * Изменить статус задачи
      */
     @GetMapping("/done/{id}")
-    public String changeDone(@PathVariable int id, Model model) {
-        if (taskService.invertDoneById(id)) {
-            return "redirect:/tasks/all";
+    public String changeDoneToFalse(@PathVariable int id, Model model) {
+        if (taskService.updateStatusById(id, true)) {
+            return "redirect:/tasks/" + id;
         }
         model.addAttribute("message",
-                "Не удалось изменить задачу с указанным идентификатором");
+                "Не удалось обновить статус задачи");
 
         return "/errors/404";
     }

@@ -2,7 +2,7 @@ package ru.job4j.mapper;
 
 import org.mapstruct.Mapper;
 import ru.job4j.dto.TaskDto;
-import ru.job4j.model.Task;
+import ru.job4j.entity.Task;
 
 @Mapper(componentModel = "spring")
 public interface TaskMapper {

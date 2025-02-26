@@ -1,4 +1,4 @@
-package ru.job4j.model;
+package ru.job4j.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 @Entity
 @Table(name = "tasks")
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = {"id", "description"})
@@ -23,13 +24,8 @@ public class Task {
 
     private String description;
 
-    private LocalDateTime created;
+    private LocalDateTime created = LocalDateTime.now();
 
     private boolean done;
-
-    public Task(String description) {
-        this.description = description;
-        this.created = LocalDateTime.now();
-    }
 
 }

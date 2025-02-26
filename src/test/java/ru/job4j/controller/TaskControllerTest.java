@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -167,22 +168,22 @@ class TaskControllerTest {
     @Test
     public void whenTryToMakeTaskDoneThenRedirectToAllTasksPage() {
 
-        when(taskService.invertDoneById(anyInt())).thenReturn(true);
+        when(taskService.updateStatusById(anyInt(), anyBoolean())).thenReturn(true);
 
         Model model = new ConcurrentModel();
-        String view = tasksController.changeDone(anyInt(), model);
+        String view = tasksController.changeDoneToFalse(7, model);
 
-        assertThat(view).isEqualTo("redirect:/tasks/all");
+        assertThat(view).isEqualTo("redirect:/tasks/7");
     }
 
     @Test
     public void whenTryToMakeTaskDoneThenRedirectToErrorPage() {
-        String expectedMassage = "Не удалось изменить задачу с указанным идентификатором";
+        String expectedMassage = "Не удалось обновить статус задачи";
 
-        when(taskService.invertDoneById(anyInt())).thenReturn(false);
+        when(taskService.updateStatusById(anyInt(), anyBoolean())).thenReturn(false);
 
         Model model = new ConcurrentModel();
-        String view = tasksController.changeDone(anyInt(), model);
+        String view = tasksController.changeDoneToFalse(7, model);
         String actualMessage = (String) model.getAttribute("message");
 
         assertThat(view).isEqualTo("/errors/404");

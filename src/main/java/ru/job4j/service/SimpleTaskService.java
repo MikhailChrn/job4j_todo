@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.job4j.dto.CreateTaskDto;
 import ru.job4j.dto.TaskDto;
 import ru.job4j.mapper.TaskMapper;
-import ru.job4j.model.Task;
+import ru.job4j.entity.Task;
 import ru.job4j.repository.TaskRepository;
 
 import java.util.Collection;
@@ -44,7 +44,9 @@ public class SimpleTaskService implements TaskService {
     @Override
     public boolean add(CreateTaskDto dto) {
         return taskRepository.save(
-                new Task(dto.getDescription())) != null;
+                Task.builder()
+                        .description(dto.getDescription())
+                        .build()) != null;
     }
 
     @Override
@@ -70,13 +72,7 @@ public class SimpleTaskService implements TaskService {
     }
 
     @Override
-    public boolean invertDoneById(int id) {
-        Optional<Task> taskModelOptional = taskRepository.findById(id);
-        if (taskModelOptional.isEmpty()) {
-            return false;
-        }
-        Task task = taskModelOptional.get();
-        task.setDone(!task.isDone());
-        return taskRepository.update(task);
+    public boolean updateStatusById(int id, boolean done) {
+        return taskRepository.updateStatusById(id, done);
     }
 }

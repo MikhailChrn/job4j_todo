@@ -8,7 +8,7 @@ import org.mapstruct.factory.Mappers;
 
 import ru.job4j.dto.TaskDto;
 import ru.job4j.mapper.TaskMapper;
-import ru.job4j.model.Task;
+import ru.job4j.entity.Task;
 import ru.job4j.repository.TaskRepository;
 
 import java.time.LocalDateTime;
@@ -17,8 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,10 +37,10 @@ class SimpleTaskServiceTest {
     @Test
     public void whenAddTaskThenFindTaskByIdSuccessfull() {
         CreateTaskDto dto = new CreateTaskDto("Test-description");
-        Task result = new Task(dto.getDescription());
+        Task result = Task.builder().description(dto.getDescription()).build();
 
         when(taskRepository.save(any(Task.class)))
-                .thenReturn(new Task(dto.getDescription()));
+                .thenReturn(Task.builder().description(dto.getDescription()).build());
         when(taskRepository.findById(anyInt()))
                 .thenReturn(Optional.of(result));
 
@@ -64,13 +63,10 @@ class SimpleTaskServiceTest {
 
     @Test
     public void whenInvertDoneByIdThenGetTrue() {
-        Task task = new Task("Test-description");
 
-        when(taskRepository.findById(anyInt())).thenReturn(Optional.of(task));
-        when(taskRepository.update(any(Task.class)))
-                .thenReturn(true);
+        when(taskRepository.updateStatusById(anyInt(), anyBoolean())).thenReturn(true);
 
-        assertThat(taskService.invertDoneById(anyInt())).isTrue();
+        assertThat(taskService.updateStatusById(7, true)).isTrue();
     }
 
     @Test

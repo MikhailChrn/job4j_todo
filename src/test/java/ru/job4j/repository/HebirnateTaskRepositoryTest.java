@@ -5,15 +5,15 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ru.job4j.configuration.HibernateConfiguration;
-import ru.job4j.model.Task;
+import ru.job4j.entity.Task;
+import ru.job4j.exception.RepositoryException;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
-import static java.util.Optional.empty;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class HebirnateTaskRepositoryTest {
 
@@ -24,7 +24,7 @@ class HebirnateTaskRepositoryTest {
     @BeforeAll
     public static void initRepositories() throws Exception {
         sessionFactory = new HibernateConfiguration().sessionFactory();
-        taskRepository = new HebirnateTaskRepository(sessionFactory);
+        taskRepository = new HibernateTaskRepository(sessionFactory);
     }
 
     @AfterEach
@@ -43,14 +43,16 @@ class HebirnateTaskRepositoryTest {
     @Test
     public void whenDontSaveThenNothingFound() {
 
-        assertThat(taskRepository.findById(0))
-                .isEqualTo(empty());
+        assertThrows(RepositoryException.class,
+                () -> {
+                    taskRepository.findById(0);
+                });
     }
 
     @Test
     public void whenSaveThenGetSame() {
         Task task = taskRepository.save(
-                new Task("Test-description"));
+                Task.builder().description("Test-description").build());
 
         Task savedTask = taskRepository
                 .findById(task.getId()).get();
@@ -61,11 +63,11 @@ class HebirnateTaskRepositoryTest {
     @Test
     public void whenSaveSeveralThenGetAll() {
         Task task1 = taskRepository.save(
-                new Task("Test-description 1"));
+                Task.builder().description("Test-description 1").build());
         Task task2 = taskRepository.save(
-                new Task("Test-description 2"));
+                Task.builder().description("Test-description 2").build());
         Task task3 = taskRepository.save(
-                new Task("Test-description 3"));
+                Task.builder().description("Test-description 3").build());
 
         Collection<Task> result = taskRepository.findAll();
 
@@ -75,22 +77,19 @@ class HebirnateTaskRepositoryTest {
     @Test
     public void whenDeleteThenGetEmptyOptional() {
         Task task = taskRepository.save(
-                new Task("Test-description"));
+                Task.builder().description("Test-description").build());
 
-        boolean isDeleted = taskRepository
-                .deleteById(task.getId());
-
-        Optional<Task> savedTask = taskRepository
-                .findById(task.getId());
-
-        assertThat(isDeleted).isTrue();
-        assertThat(savedTask).isEqualTo(empty());
+        assertThat(taskRepository.deleteById(task.getId())).isTrue();
+        assertThrows(RepositoryException.class,
+                () -> {
+                    taskRepository.findById(task.getId());
+                });
     }
 
     @Test
     public void whenUpdateThenGetUpdated() {
         Task task = taskRepository.save(
-                new Task("before update"));
+                Task.builder().description("before update").build());
 
         Task updatedTask =
                 new Task(task.getId(), "after update",
@@ -116,11 +115,9 @@ class HebirnateTaskRepositoryTest {
 
     @Test
     public void whenGetOnlyCompletedTaskThenGetThese() {
-        Task task1 = new Task("Test-description-1");
-        task1.setDone(true);
-        Task task2 = new Task("Test-description-2");
-        Task task3 = new Task("Test-description-3");
-        task3.setDone(true);
+        Task task1 = Task.builder().description("Test-description-1").done(true).build();
+        Task task2 = Task.builder().description("Test-description-2").build();
+        Task task3 = Task.builder().description("Test-description-3").done(true).build();
         List.of(task1, task2, task3).forEach(
                 task -> taskRepository.save(task)
         );
@@ -128,5 +125,18 @@ class HebirnateTaskRepositoryTest {
         Collection<Task> result = taskRepository.findAllCompleted();
 
         assertThat(result).isEqualTo(List.of(task1, task3));
+    }
+
+    @Test
+    public void whenTryToUpdateDoneStatusThenGetSuccess() {
+        Task originalTask = taskRepository.save(Task.builder()
+                .description("Test-description")
+                .created(LocalDateTime.now())
+                .done(false)
+                .build());
+
+        taskRepository.updateStatusById(originalTask.getId(), true);
+
+        assertThat(taskRepository.findById(originalTask.getId()).get().isDone()).isTrue();
     }
 }
