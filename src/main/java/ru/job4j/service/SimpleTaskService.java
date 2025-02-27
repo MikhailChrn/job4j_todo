@@ -45,6 +45,7 @@ public class SimpleTaskService implements TaskService {
     public boolean add(CreateTaskDto dto) {
         return taskRepository.save(
                 Task.builder()
+                        .title(dto.getTitle())
                         .description(dto.getDescription())
                         .build()) != null;
     }

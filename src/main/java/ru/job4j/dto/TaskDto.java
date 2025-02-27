@@ -1,17 +1,18 @@
 package ru.job4j.dto;
 
 import lombok.Value;
-import ru.job4j.entity.Task;
 
 import java.time.LocalDateTime;
 
 /**
- * DTO for {@link Task}
+ * DTO for {@link ru.job4j.entity.Task}
  */
 @Value
 public class TaskDto {
 
     int id;
+
+    String title;
 
     String description;
 

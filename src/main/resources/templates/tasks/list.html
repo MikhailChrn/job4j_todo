@@ -48,9 +48,9 @@
         <div class="container">
             <div class="row">
                 <table class="table table-bordered">
-                    <col style="width:60%">
-                    <col style="width:20%">
-                    <col style="width:20%">
+                    <col style="width:50%">
+                    <col style="width:25%">
+                    <col style="width:25%">
                     <thead>
                     <tr class="table-primary">
                         <th scope="col">
@@ -66,7 +66,7 @@
                     </thead>
                     <tbody>
                     <tr class="table-secondary" th:each="taskDto: ${taskDtos}">
-                        <td><a th:text="${taskDto.description}"
+                        <td><a th:text="${taskDto.title}"
                                th:href="@{/tasks/{id}(id=${taskDto.id})}" />
                         </td>
                         <td th:text="${#temporals.format(taskDto.created, 'dd-MM-yyyy HH:mm')}" />

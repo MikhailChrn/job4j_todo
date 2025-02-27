@@ -36,7 +36,7 @@ class SimpleTaskServiceTest {
 
     @Test
     public void whenAddTaskThenFindTaskByIdSuccessfull() {
-        CreateTaskDto dto = new CreateTaskDto("Test-description");
+        CreateTaskDto dto = new CreateTaskDto("test", "Test-description");
         Task result = Task.builder().description(dto.getDescription()).build();
 
         when(taskRepository.save(any(Task.class)))
@@ -47,6 +47,7 @@ class SimpleTaskServiceTest {
         assertThat(taskService.add(dto)).isTrue();
         assertThat(taskService.findById(anyInt()).get())
                 .isEqualTo(new TaskDto(result.getId(),
+                        result.getTitle(),
                         result.getDescription(),
                         result.getCreated(),
                         result.isDone()));
@@ -72,9 +73,9 @@ class SimpleTaskServiceTest {
     @Test
     public void whenRequestAllTaskThenReturnCollectionTaskDto() {
         Collection<Task> taskRepositoryResponse = List.of(
-                new Task(1, "test1", LocalDateTime.now(), true),
-                new Task(2, "test2", LocalDateTime.now(), true),
-                new Task(3, "test3", LocalDateTime.now(), true));
+                new Task(1, "test1", "test-descr-1", LocalDateTime.now(), true),
+                new Task(2, "test2", "test-descr-2", LocalDateTime.now(), true),
+                new Task(3, "test3", "test-descr-3", LocalDateTime.now(), true));
 
         when(taskRepository.findAll())
                 .thenReturn(taskRepositoryResponse);

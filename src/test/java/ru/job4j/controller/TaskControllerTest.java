@@ -37,9 +37,9 @@ class TaskControllerTest {
     @Test
     public void whenRequestAllTaskThenGetListPageWith() {
         taskDtoList = List.of(
-                new TaskDto(3, "Test-descr 3", LocalDateTime.now(), true),
-                new TaskDto(5, "Test-descr 5", LocalDateTime.now(), false),
-                new TaskDto(7, "Test-descr 7", LocalDateTime.now(), true));
+                new TaskDto(3, "title 3", "Test-descr 3", LocalDateTime.now(), true),
+                new TaskDto(5, "title 5", "Test-descr 5", LocalDateTime.now(), false),
+                new TaskDto(7, "title 7", "Test-descr 7", LocalDateTime.now(), true));
 
         when(taskService.findAll()).thenReturn(taskDtoList);
 
@@ -61,19 +61,19 @@ class TaskControllerTest {
 
     @Test
     public void whenSuccessTryToCreateTaskThenRedirectToAllNewTasksPage() {
-        CreateTaskDto createTaskDto = new CreateTaskDto("test");
+        CreateTaskDto createTaskDto = new CreateTaskDto("test", "test-descr");
 
         when(taskService.add(createTaskDto)).thenReturn(true);
 
         Model model = new ConcurrentModel();
         String view = tasksController.create(createTaskDto, model);
 
-        assertThat(view).isEqualTo("redirect:/tasks/new");
+        assertThat(view).isEqualTo("redirect:/tasks/all");
     }
 
     @Test
     public void whenFailTryToCreateTaskThenRedirectToErrorPage() {
-        CreateTaskDto createTaskDto = new CreateTaskDto("test");
+        CreateTaskDto createTaskDto = new CreateTaskDto("test", "test-descr");
         String expectedMassage = "Не удалось создать задачу с указанным идентификатором";
 
         when(taskService.add(createTaskDto)).thenReturn(false);
@@ -88,7 +88,8 @@ class TaskControllerTest {
 
     @Test
     public void whenRequestTaskPageThenGetIt() {
-        TaskDto createdTaskDto = new TaskDto(7, "test-7", LocalDateTime.now(), false);
+        TaskDto createdTaskDto = new TaskDto(7, "test-7",
+                "test-descr-7", LocalDateTime.now(), false);
 
         when(taskService.findById(createdTaskDto.getId())).thenReturn(Optional.of(createdTaskDto));
 
@@ -115,7 +116,8 @@ class TaskControllerTest {
 
     @Test
     public void whenSuccessEditTaskThenRedirectToAllTasksPage() {
-        TaskDto updatedTaskDto = new TaskDto(7, "test-7", LocalDateTime.now(), false);
+        TaskDto updatedTaskDto = new TaskDto(7, "test-7",
+                "test-descr-7", LocalDateTime.now(), false);
 
         when(taskService.update(updatedTaskDto)).thenReturn(true);
 
@@ -127,7 +129,8 @@ class TaskControllerTest {
 
     @Test
     public void whenFailEditTaskThenRedirectToErrorPage() {
-        TaskDto updatedTaskDto = new TaskDto(7, "test-7", LocalDateTime.now(), false);
+        TaskDto updatedTaskDto = new TaskDto(7, "test-7",
+                "test-descr-7", LocalDateTime.now(), false);
         String expectedMassage = "Не удалось изменить задачу с указанным идентификатором";
 
         when(taskService.update(updatedTaskDto)).thenReturn(false);

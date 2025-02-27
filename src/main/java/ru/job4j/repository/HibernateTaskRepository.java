@@ -246,13 +246,11 @@ public class HibernateTaskRepository implements TaskRepository {
             session.beginTransaction();
             int count = session.createQuery(
                             "UPDATE Task T "
-                                    + "SET T.description = :description, "
-                                    + "T.created = :created, "
-                                    + "T.done = :done "
+                                    + "SET T.title = :title, "
+                                    + "T.description = :description "
                                     + "WHERE T.id = :id")
+                    .setParameter("title", task.getTitle())
                     .setParameter("description", task.getDescription())
-                    .setParameter("created", task.getCreated())
-                    .setParameter("done", task.isDone())
                     .setParameter("id", task.getId())
                     .executeUpdate();
             session.getTransaction().commit();

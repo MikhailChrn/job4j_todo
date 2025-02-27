@@ -61,7 +61,7 @@ public class TaskController {
     @PostMapping("/create")
     public String create(@ModelAttribute CreateTaskDto dto, Model model) {
         if (taskService.add(dto)) {
-            return "redirect:/tasks/new";
+            return "redirect:/tasks/all";
         }
         model.addAttribute("message",
                 "Не удалось создать задачу с указанным идентификатором");

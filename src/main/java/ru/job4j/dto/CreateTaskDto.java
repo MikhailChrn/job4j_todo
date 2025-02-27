@@ -5,6 +5,8 @@ import lombok.Value;
 @Value
 public class CreateTaskDto {
 
+    String title;
+
     String description;
 
 }

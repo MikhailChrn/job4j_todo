@@ -49,16 +49,29 @@
             </div>
 
             <div class="mb-3">
-                <label for="description" class="form-label">
-                    <b>Описание задания</b>
-                </label>
-                <textarea class="form-control"
-                          id="description"
-                          name="description"
-                          th:field="*{description}"
-                          rows="2"
-                          placeholder="Опишите задачу">
+                <div class="row">
+                    <label for="title" class="form-label">
+                        <b>Тема задания</b>
+                    </label>
+                    <textarea class="form-control"
+                              id="title"
+                              name="title"
+                              th:field="*{title}"
+                              rows="1">
                 </textarea>
+                </div>
+
+                <div class="row">
+                    <label for="description" class="form-label">
+                        <b>Описание задания</b>
+                    </label>
+                    <textarea class="form-control"
+                              id="description"
+                              name="description"
+                              th:field="*{description}"
+                              rows="3">
+                </textarea>
+                </div>
             </div>
 
             <div class="container">
@@ -79,7 +92,7 @@
                     </div>
 
                     <div class=" col" align="center">
-                        <a class="btn btn-light w-100" th:href="@{/tasks/all}">Отмена</a>
+                        <a class="btn btn-light w-100" th:href="@{/tasks/all}">Уйти</a>
                     </div>
 
                 </div>

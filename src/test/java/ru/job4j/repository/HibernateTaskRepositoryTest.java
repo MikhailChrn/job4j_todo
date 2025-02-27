@@ -15,7 +15,7 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class HebirnateTaskRepositoryTest {
+class HibernateTaskRepositoryTest {
 
     private static SessionFactory sessionFactory;
 
@@ -52,7 +52,7 @@ class HebirnateTaskRepositoryTest {
     @Test
     public void whenSaveThenGetSame() {
         Task task = taskRepository.save(
-                Task.builder().description("Test-description").build());
+                Task.builder().title("Test").description("Test-description").build());
 
         Task savedTask = taskRepository
                 .findById(task.getId()).get();
@@ -63,11 +63,11 @@ class HebirnateTaskRepositoryTest {
     @Test
     public void whenSaveSeveralThenGetAll() {
         Task task1 = taskRepository.save(
-                Task.builder().description("Test-description 1").build());
+                Task.builder().title("Test 1").description("Test-description 1").build());
         Task task2 = taskRepository.save(
-                Task.builder().description("Test-description 2").build());
+                Task.builder().title("Test 2").description("Test-description 2").build());
         Task task3 = taskRepository.save(
-                Task.builder().description("Test-description 3").build());
+                Task.builder().title("Test 3").description("Test-description 3").build());
 
         Collection<Task> result = taskRepository.findAll();
 
@@ -77,7 +77,7 @@ class HebirnateTaskRepositoryTest {
     @Test
     public void whenDeleteThenGetEmptyOptional() {
         Task task = taskRepository.save(
-                Task.builder().description("Test-description").build());
+                Task.builder().title("Test").description("Test-description").build());
 
         assertThat(taskRepository.deleteById(task.getId())).isTrue();
         assertThrows(RepositoryException.class,
@@ -89,10 +89,13 @@ class HebirnateTaskRepositoryTest {
     @Test
     public void whenUpdateThenGetUpdated() {
         Task task = taskRepository.save(
-                Task.builder().description("before update").build());
+                Task.builder()
+                        .title("title")
+                        .description("before update")
+                        .build());
 
         Task updatedTask =
-                new Task(task.getId(), "after update",
+                new Task(task.getId(), task.getTitle(), "after update",
                         task.getCreated(), task.isDone());
 
         boolean isUpdated = taskRepository.update(updatedTask);
@@ -105,7 +108,7 @@ class HebirnateTaskRepositoryTest {
 
     @Test
     public void whenUpdateUnexistingVacancyThenGetFalse() {
-        Task task = new Task(-1, "Test-description",
+        Task task = new Task(-1, "Test-title", "Test-description",
                 LocalDateTime.now(), true);
 
         boolean isUpdated = taskRepository.update(task);
@@ -115,9 +118,9 @@ class HebirnateTaskRepositoryTest {
 
     @Test
     public void whenGetOnlyCompletedTaskThenGetThese() {
-        Task task1 = Task.builder().description("Test-description-1").done(true).build();
-        Task task2 = Task.builder().description("Test-description-2").build();
-        Task task3 = Task.builder().description("Test-description-3").done(true).build();
+        Task task1 = Task.builder().title("Test 1").description("Test-description-1").done(true).build();
+        Task task2 = Task.builder().title("Test 2").description("Test-description-2").build();
+        Task task3 = Task.builder().title("Test 3").description("Test-description-3").done(true).build();
         List.of(task1, task2, task3).forEach(
                 task -> taskRepository.save(task)
         );
@@ -130,6 +133,7 @@ class HebirnateTaskRepositoryTest {
     @Test
     public void whenTryToUpdateDoneStatusThenGetSuccess() {
         Task originalTask = taskRepository.save(Task.builder()
+                .title("Test-title")
                 .description("Test-description")
                 .created(LocalDateTime.now())
                 .done(false)
