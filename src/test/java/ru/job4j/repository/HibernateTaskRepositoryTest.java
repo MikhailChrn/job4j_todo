@@ -22,7 +22,7 @@ class HibernateTaskRepositoryTest {
     private static TaskRepository taskRepository;
 
     @BeforeAll
-    public static void initRepositories() throws Exception {
+    public static void initRepositories() {
         sessionFactory = new HibernateConfiguration().sessionFactory();
         taskRepository = new HibernateTaskRepository(sessionFactory);
     }
@@ -41,7 +41,7 @@ class HibernateTaskRepositoryTest {
     }
 
     @Test
-    public void whenDontSaveThenNothingFound() {
+    public void whenDontSaveThenNothingFoundAndGetRepositoryException() {
 
         assertThrows(RepositoryException.class,
                 () -> {
@@ -75,7 +75,7 @@ class HibernateTaskRepositoryTest {
     }
 
     @Test
-    public void whenDeleteThenGetEmptyOptional() {
+    public void whenDeleteThenGetEmptyOptionalAndGetRepositoryException() {
         Task task = taskRepository.save(
                 Task.builder().title("Test").description("Test-description").build());
 
