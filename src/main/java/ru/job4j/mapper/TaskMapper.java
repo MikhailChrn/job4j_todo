@@ -10,4 +10,5 @@ public interface TaskMapper {
     TaskDto getModelFromEntity(Task task);
 
     Task getEntityFromDto(TaskDto taskDto);
+
 }

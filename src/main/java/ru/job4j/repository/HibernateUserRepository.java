@@ -114,8 +114,8 @@ public class HibernateUserRepository implements UserRepository {
         try {
             session.beginTransaction();
             result = session.createQuery(
-                            "FROM User U WHERE U.login = :login, "
-                                    + "U.password = :password", User.class)
+                            "FROM User U WHERE U.login = :login "
+                                    + "AND U.password = :password", User.class)
                     .setParameter("login", login)
                     .setParameter("password", password)
                     .uniqueResultOptional();

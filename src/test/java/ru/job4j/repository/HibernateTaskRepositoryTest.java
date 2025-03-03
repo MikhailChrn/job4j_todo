@@ -29,7 +29,7 @@ class HibernateTaskRepositoryTest {
 
     @AfterEach
     public void clearTasks() {
-        taskRepository.findAll().forEach(
+        taskRepository.findAllByUserId(1).forEach(
                 task -> taskRepository.deleteById(task.getId())
         );
     }
@@ -63,13 +63,16 @@ class HibernateTaskRepositoryTest {
     @Test
     public void whenSaveSeveralThenGetAll() {
         Task task1 = taskRepository.save(
-                Task.builder().title("Test 1").description("Test-description 1").build());
+                Task.builder().title("Test 1").userId(1)
+                        .description("Test-description 1").build());
         Task task2 = taskRepository.save(
-                Task.builder().title("Test 2").description("Test-description 2").build());
+                Task.builder().title("Test 2").userId(1)
+                        .description("Test-description 2").build());
         Task task3 = taskRepository.save(
-                Task.builder().title("Test 3").description("Test-description 3").build());
+                Task.builder().title("Test 3").userId(1)
+                        .description("Test-description 3").build());
 
-        Collection<Task> result = taskRepository.findAll();
+        Collection<Task> result = taskRepository.findAllByUserId(1);
 
         assertThat(result).isEqualTo(List.of(task1, task2, task3));
     }
@@ -91,11 +94,12 @@ class HibernateTaskRepositoryTest {
         Task task = taskRepository.save(
                 Task.builder()
                         .title("title")
+                        .userId(1)
                         .description("before update")
                         .build());
 
         Task updatedTask =
-                new Task(task.getId(), task.getTitle(), "after update",
+                new Task(task.getId(), task.getTitle(), task.getUserId(), "after update",
                         task.getCreated(), task.isDone());
 
         boolean isUpdated = taskRepository.update(updatedTask);
@@ -108,7 +112,7 @@ class HibernateTaskRepositoryTest {
 
     @Test
     public void whenUpdateUnexistingVacancyThenGetFalse() {
-        Task task = new Task(-1, "Test-title", "Test-description",
+        Task task = new Task(-1, "Test-title", 1, "Test-description",
                 LocalDateTime.now(), true);
 
         boolean isUpdated = taskRepository.update(task);
@@ -118,16 +122,24 @@ class HibernateTaskRepositoryTest {
 
     @Test
     public void whenGetOnlyCompletedTaskThenGetThese() {
-        Task task1 = Task.builder().title("Test 1").description("Test-description-1").done(true).build();
-        Task task2 = Task.builder().title("Test 2").description("Test-description-2").build();
-        Task task3 = Task.builder().title("Test 3").description("Test-description-3").done(true).build();
+        Task task1 = Task.builder().title("Test 1")
+                .userId(1)
+                .description("Test-description-1")
+                .done(true).build();
+        Task task2 = Task.builder().title("Test 2")
+                .userId(1)
+                .description("Test-description-2").build();
+        Task task3 = Task.builder().title("Test 3")
+                .userId(1)
+                .description("Test-description-3")
+                .done(true).build();
         List.of(task1, task2, task3).forEach(
                 task -> taskRepository.save(task)
         );
 
-        Collection<Task> result = taskRepository.findAllCompleted();
+        Collection<Task> result = taskRepository.findAllByUserId(1);
 
-        assertThat(result).isEqualTo(List.of(task1, task3));
+        assertThat(result).isEqualTo(List.of(task1, task2, task3));
     }
 
     @Test

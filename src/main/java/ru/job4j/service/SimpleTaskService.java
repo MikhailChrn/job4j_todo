@@ -21,22 +21,22 @@ public class SimpleTaskService implements TaskService {
     private final TaskMapper taskMapper;
 
     @Override
-    public Collection<TaskDto> findAll() {
-        return taskRepository.findAll().stream()
+    public Collection<TaskDto> findAllByUserId(int userId) {
+        return taskRepository.findAllByUserId(userId).stream()
                 .map(taskMapper::getModelFromEntity)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Collection<TaskDto> findAllNew() {
-        return taskRepository.findAllNew().stream()
+    public Collection<TaskDto> findAllNewByUserId(int userId) {
+        return taskRepository.findAllNewByUserId(userId).stream()
                 .map(taskMapper::getModelFromEntity)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Collection<TaskDto> findAllCompleted() {
-        return taskRepository.findAllCompleted().stream()
+    public Collection<TaskDto> findAllCompletedByUserId(int userId) {
+        return taskRepository.findAllCompletedByUserId(userId).stream()
                 .map(taskMapper::getModelFromEntity)
                 .collect(Collectors.toList());
     }
@@ -46,6 +46,7 @@ public class SimpleTaskService implements TaskService {
         return taskRepository.save(
                 Task.builder()
                         .title(dto.getTitle())
+                        .userId(dto.getUserId())
                         .description(dto.getDescription())
                         .build()) != null;
     }

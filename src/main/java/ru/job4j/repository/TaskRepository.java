@@ -9,11 +9,11 @@ public interface TaskRepository {
 
     Optional<Task> findById(int id);
 
-    Collection<Task> findAll();
+    Collection<Task> findAllByUserId(int userId);
 
-    Collection<Task> findAllNew();
+    Collection<Task> findAllNewByUserId(int userId);
 
-    Collection<Task> findAllCompleted();
+    Collection<Task> findAllCompletedByUserId(int userId);
 
     Collection<Task> findByLikeDescription(String key);
 

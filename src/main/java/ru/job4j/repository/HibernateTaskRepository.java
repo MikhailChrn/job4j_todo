@@ -53,12 +53,13 @@ public class HibernateTaskRepository implements TaskRepository {
      * @return всех список задач
      */
     @Override
-    public Collection<Task> findAll() {
+    public Collection<Task> findAllByUserId(int userId) {
         Session session = sessionFactory.openSession();
         List<Task> result = List.of();
         try {
             session.beginTransaction();
-            result = session.createQuery("FROM Task")
+            result = session.createQuery("FROM Task T WHERE T.userId = :userId")
+                    .setParameter("userId", userId)
                     .getResultList();
             session.getTransaction().commit();
 
@@ -78,12 +79,15 @@ public class HibernateTaskRepository implements TaskRepository {
      * @return новых список задач
      */
     @Override
-    public Collection<Task> findAllNew() {
+    public Collection<Task> findAllNewByUserId(int userId) {
         Session session = sessionFactory.openSession();
         List<Task> result = List.of();
         try {
             session.beginTransaction();
-            result = session.createQuery("FROM Task T WHERE T.done = false")
+            result = session.createQuery("FROM Task T "
+                            + "WHERE T.userId = :userId "
+                            + "AND T.done = false")
+                    .setParameter("userId", userId)
                     .getResultList();
             session.getTransaction().commit();
 
@@ -103,12 +107,15 @@ public class HibernateTaskRepository implements TaskRepository {
      * @return выполненных список задач
      */
     @Override
-    public Collection<Task> findAllCompleted() {
+    public Collection<Task> findAllCompletedByUserId(int userId) {
         Session session = sessionFactory.openSession();
         List<Task> result = List.of();
         try {
             session.beginTransaction();
-            result = session.createQuery("FROM Task T WHERE T.done = true")
+            result = session.createQuery("FROM Task T "
+                            + "WHERE T.userId = :userId "
+                            + "AND T.done = true")
+                    .setParameter("userId", userId)
                     .getResultList();
             session.getTransaction().commit();
 

@@ -8,11 +8,11 @@ import java.util.Optional;
 
 public interface TaskService {
 
-    Collection<TaskDto> findAll();
+    Collection<TaskDto> findAllByUserId(int userId);
 
-    Collection<TaskDto> findAllNew();
+    Collection<TaskDto> findAllNewByUserId(int userId);
 
-    Collection<TaskDto> findAllCompleted();
+    Collection<TaskDto> findAllCompletedByUserId(int userId);
 
     boolean add(CreateTaskDto dto);
 

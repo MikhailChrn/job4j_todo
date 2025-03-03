@@ -1,12 +1,18 @@
 package ru.job4j.dto;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Value
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreateTaskDto {
 
     String title;
 
     String description;
+
+    int userId;
 
 }

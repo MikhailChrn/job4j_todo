@@ -24,6 +24,9 @@ public class Task {
 
     private String title;
 
+    @Column(name = "user_id")
+    private int userId;
+
     private String description;
 
     private LocalDateTime created = LocalDateTime.now();

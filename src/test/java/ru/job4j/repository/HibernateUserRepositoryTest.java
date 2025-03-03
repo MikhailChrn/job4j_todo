@@ -95,4 +95,15 @@ class HibernateUserRepositoryTest {
                     userRepository.findById(user.getId());
                 });
     }
+
+    @Test
+    public void whenSavedUserThenGetHimByLoginAndPasswordSuccess() {
+        User user = userRepository.save(
+                User.builder().name("name")
+                        .login("login")
+                        .password("password").build());
+
+        assertThat(userRepository.findByLoginAndPassword(user.getLogin(), user.getPassword()).get())
+                .isEqualTo(user);
+    }
 }

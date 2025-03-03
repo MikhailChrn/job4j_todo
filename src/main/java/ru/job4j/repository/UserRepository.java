@@ -13,7 +13,7 @@ public interface UserRepository {
 
     Optional<User> findById(int id);
 
-    Optional<User> findByLoginAndPassword(String email, String password);
+    Optional<User> findByLoginAndPassword(String login, String password);
 
     boolean deleteById(int id);
 }
