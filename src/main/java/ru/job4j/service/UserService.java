@@ -8,10 +8,8 @@ import java.util.Optional;
 
 public interface UserService {
 
-    Optional<User> save(User user);
+    Optional<Integer> save(User user);
 
     Optional<User> findByLoginAndPassword(String login, String password);
-
-    void addUserAsAttributeToModel(Model model, HttpSession session);
 
 }

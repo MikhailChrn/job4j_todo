@@ -32,14 +32,13 @@ class  IndexControllerTest {
     @Test
     public void whenRequestIndexPageThenGetIndexPage() {
         User user = User.builder().id(1).build();
-
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
 
         IndexController indexController = new IndexController(userService);
 
         Model model = new ConcurrentModel();
-        String view = indexController.getIndex(model, session);
+        String view = indexController.getIndex(model, request);
 
         assertThat(view).isEqualTo("index");
     }

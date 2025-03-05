@@ -50,32 +50,32 @@ class HibernateUserRepositoryTest {
 
     @Test
     public void whenSaveThenGetSame() {
-        User user = userRepository.save(
-                User.builder().name("name")
-                        .login("login")
-                        .password("password")
-                        .build());
+        User user = User.builder().name("name")
+                .login("login")
+                .password("password")
+                .build();
+        int userId = userRepository.save(user).get();
 
         User savedUser = userRepository
-                .findById(user.getId()).get();
+                .findById(userId).get();
 
         assertThat(savedUser).isEqualTo(user);
     }
 
     @Test
     public void whenSaveSeveralThenGetAll() {
-        User user1 = userRepository.save(
-                User.builder().name("name 1")
-                        .login("login 1")
-                        .password("password 1").build());
-        User user2 = userRepository.save(
-                User.builder().name("name 2")
-                        .login("login 2")
-                        .password("password 2").build());
-        User user3 = userRepository.save(
-                User.builder().name("name 3")
-                        .login("login 3")
-                        .password("password 3").build());
+        User user1 = User.builder().name("name 1")
+                .login("login 1")
+                .password("password 1").build();
+        User user2 = User.builder().name("name 2")
+                .login("login 2")
+                .password("password 2").build();
+        User user3 = User.builder().name("name 3")
+                .login("login 3")
+                .password("password 3").build();
+
+        List.of(user1, user2, user3)
+                .forEach(user -> userRepository.save(user));
 
         Collection<User> result = userRepository.findAll();
 
@@ -84,10 +84,11 @@ class HibernateUserRepositoryTest {
 
     @Test
     public void whenDeleteThenNothingFoundAndGetRepositoryException() {
-        User user = userRepository.save(
-                User.builder().name("name")
-                        .login("login")
-                        .password("password").build());
+        User user = User.builder().name("name")
+                .login("login")
+                .password("password").build();
+
+        userRepository.save(user);
 
         assertThat(userRepository.deleteById(user.getId())).isTrue();
         assertThrows(RepositoryException.class,
@@ -98,10 +99,11 @@ class HibernateUserRepositoryTest {
 
     @Test
     public void whenSavedUserThenGetHimByLoginAndPasswordSuccess() {
-        User user = userRepository.save(
-                User.builder().name("name")
-                        .login("login")
-                        .password("password").build());
+        User user = User.builder().name("name")
+                .login("login")
+                .password("password").build();
+
+        userRepository.save(user);
 
         assertThat(userRepository.findByLoginAndPassword(user.getLogin(), user.getPassword()).get())
                 .isEqualTo(user);

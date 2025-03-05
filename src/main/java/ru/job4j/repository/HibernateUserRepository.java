@@ -25,16 +25,12 @@ public class HibernateUserRepository implements UserRepository {
      * @return Optional задача с id
      */
     @Override
-    public User save(User user) {
+    public Optional<Integer> save(User user) {
         Session session = this.sessionFactory.openSession();
-        Integer userId;
-        User result = null;
+        Integer userId = null;
         try {
             Transaction transaction = session.beginTransaction();
             userId = (Integer) session.save(user);
-            if (userId != null) {
-                result = session.get(User.class, userId);
-            }
             transaction.commit();
 
         } catch (Exception ex) {
@@ -45,7 +41,7 @@ public class HibernateUserRepository implements UserRepository {
             session.close();
         }
 
-        return result;
+        return Optional.of(userId);
     }
 
     /**
@@ -89,13 +85,10 @@ public class HibernateUserRepository implements UserRepository {
             session.getTransaction().commit();
         } catch (Exception e) {
             session.getTransaction().rollback();
+            throw new RepositoryException(
+                    "Пользователь с указанным идентификатором не найден. " + e);
         } finally {
             session.close();
-        }
-
-        if (result.isEmpty()) {
-            throw new RepositoryException(
-                    "Пользователь с указанным идентификатором не найден. ");
         }
 
         return result;

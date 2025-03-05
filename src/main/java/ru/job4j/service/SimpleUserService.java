@@ -1,9 +1,7 @@
 package ru.job4j.service;
 
-import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 import ru.job4j.entity.User;
 import ru.job4j.repository.UserRepository;
 
@@ -16,9 +14,8 @@ public class SimpleUserService implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public Optional<User> save(User user) {
-
-        return Optional.of(userRepository.save(user));
+    public Optional<Integer> save(User user) {
+        return userRepository.save(user);
     }
 
     @Override
@@ -27,14 +24,4 @@ public class SimpleUserService implements UserService {
         return userRepository.findByLoginAndPassword(login, password);
     }
 
-    @Override
-    public void addUserAsAttributeToModel(Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            user = new User();
-            user.setName("Гость");
-        }
-
-        model.addAttribute("user", user);
-    }
 }
