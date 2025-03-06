@@ -50,14 +50,13 @@ class HibernateUserRepositoryTest {
 
     @Test
     public void whenSaveThenGetSame() {
-        User user = User.builder().name("name")
+        User user = userRepository.save(User.builder().name("name")
                 .login("login")
                 .password("password")
-                .build();
-        int userId = userRepository.save(user).get();
+                .build()).get();
 
         User savedUser = userRepository
-                .findById(userId).get();
+                .findById(user.getId()).get();
 
         assertThat(savedUser).isEqualTo(user);
     }

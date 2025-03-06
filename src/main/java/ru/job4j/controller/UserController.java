@@ -28,7 +28,7 @@ public class UserController {
 
     @PostMapping("/register")
     public String register(Model model, @ModelAttribute User user) {
-        Optional<Integer> savedUser = userService.save(user);
+        Optional<User> savedUser = userService.save(user);
         if (savedUser.isEmpty()) {
             model.addAttribute("message",
                     "Пользователь с таким логином уже существует");

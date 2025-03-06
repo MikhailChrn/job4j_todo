@@ -28,19 +28,17 @@ class SimpleUserServiceTest {
     @Test
     public void whenAddUserThenFindUserByIdSuccessfull() {
 
-        int userId = 7;
-
-        User user = User.builder().id(userId)
+        User user = User.builder().id(7)
                 .name("name")
                 .login("login")
                 .password("password").build();
 
         when(userRepository.save(any(User.class)))
-                .thenReturn(Optional.of(userId));
+                .thenReturn(Optional.of(user));
         when(userRepository.findByLoginAndPassword(anyString(), anyString()))
                 .thenReturn(Optional.of(user));
 
-        assertThat(userService.save(user)).isEqualTo(Optional.of(user.getId()));
+        assertThat(userService.save(user)).isEqualTo(Optional.of(user));
         assertThat(userService.findByLoginAndPassword(
                 user.getLogin(), user.getPassword()).get())
                 .isEqualTo(user);

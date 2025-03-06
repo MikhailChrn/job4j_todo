@@ -25,13 +25,17 @@ public class HibernateUserRepository implements UserRepository {
      * @return Optional задача с id
      */
     @Override
-    public Optional<Integer> save(User user) {
+    public Optional<User> save(User user) {
         Session session = this.sessionFactory.openSession();
         Integer userId = null;
         try {
             Transaction transaction = session.beginTransaction();
             userId = (Integer) session.save(user);
             transaction.commit();
+            if (userId != null) {
+                user.setId(userId);
+                return Optional.of(user);
+            }
 
         } catch (Exception ex) {
             session.getTransaction().rollback();
@@ -41,7 +45,7 @@ public class HibernateUserRepository implements UserRepository {
             session.close();
         }
 
-        return Optional.of(userId);
+        return Optional.empty();
     }
 
     /**

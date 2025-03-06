@@ -1,7 +1,6 @@
 package ru.job4j.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,7 +9,6 @@ import ru.job4j.dto.CreateTaskDto;
 import ru.job4j.dto.TaskDto;
 import ru.job4j.entity.User;
 import ru.job4j.service.TaskService;
-import ru.job4j.service.UserService;
 
 import java.util.Optional;
 
@@ -18,8 +16,6 @@ import java.util.Optional;
 @RequestMapping("/tasks")
 @AllArgsConstructor
 public class TaskController {
-
-    private final UserService userService;
 
     private final TaskService taskService;
 
@@ -29,10 +25,9 @@ public class TaskController {
     @GetMapping("/all")
     public String getAllTasksByUserId(Model model,
                                       HttpServletRequest request) {
-        HttpSession session = request.getSession();
+
         Optional<User> optionalUser = Optional.of(
-                (User) session.getAttribute("user")
-        );
+                (User) request.getSession().getAttribute("user"));
 
         model.addAttribute("taskDtos",
                 taskService.findAllByUserId(optionalUser.get().getId()));
@@ -46,10 +41,9 @@ public class TaskController {
     @GetMapping("/new")
     public String getNewTasks(Model model,
                               HttpServletRequest request) {
-        HttpSession session = request.getSession();
+
         Optional<User> optionalUser = Optional.of(
-                (User) session.getAttribute("user")
-        );
+                (User) request.getSession().getAttribute("user"));
 
         model.addAttribute("taskDtos",
                 taskService.findAllNewByUserId(optionalUser.get().getId()));
@@ -63,10 +57,9 @@ public class TaskController {
     @GetMapping("/completed")
     public String getCompletedTasks(Model model,
                                     HttpServletRequest request) {
-        HttpSession session = request.getSession();
+
         Optional<User> optionalUser = Optional.of(
-                (User) session.getAttribute("user")
-        );
+                (User) request.getSession().getAttribute("user"));
 
         model.addAttribute("taskDtos",
                 taskService.findAllCompletedByUserId(optionalUser.get().getId()));
@@ -78,8 +71,8 @@ public class TaskController {
      * Показать страницу для создания новой задачи
      */
     @GetMapping("/create")
-    public String getCreationPage(Model model, HttpServletRequest request) {
-        addUserAsAttributeToModel(model, request);
+    public String getCreationPage(Model model) {
+
         return "/tasks/create";
     }
 
@@ -90,10 +83,9 @@ public class TaskController {
     public String create(@ModelAttribute CreateTaskDto dto,
                          Model model,
                          HttpServletRequest request) {
-        HttpSession session = request.getSession();
         Optional<User> optionalUser = Optional.of(
-                (User) session.getAttribute("user")
-        );
+                (User) request.getSession().getAttribute("user"));
+
         dto.setUserId(optionalUser.get().getId());
 
         if (taskService.add(dto)) {
@@ -112,10 +104,9 @@ public class TaskController {
      */
     @GetMapping("/{id}")
     public String getPageById(@PathVariable int id,
-                              Model model,
-                              HttpServletRequest request) {
-        addUserAsAttributeToModel(model, request);
+                              Model model) {
         Optional<TaskDto> taskDto = taskService.findById(id);
+
         if (taskDto.isEmpty()) {
             model.addAttribute("message",
                     "Задача с указанным идентификатором не найдена");
@@ -132,9 +123,7 @@ public class TaskController {
      */
     @PostMapping("/edit")
     public String update(@ModelAttribute TaskDto taskDto,
-                         Model model,
-                         HttpServletRequest request) {
-        addUserAsAttributeToModel(model, request);
+                         Model model) {
 
         if (taskService.update(taskDto)) {
             return "redirect:/tasks/all";
@@ -149,9 +138,7 @@ public class TaskController {
      * Удалить задачу
      */
     @GetMapping("/delete/{id}")
-    public String delete(@PathVariable int id, Model model,
-                         HttpServletRequest request) {
-        addUserAsAttributeToModel(model, request);
+    public String delete(@PathVariable int id, Model model) {
 
         if (taskService.deleteById(id)) {
             return "redirect:/tasks/all";
@@ -167,9 +154,7 @@ public class TaskController {
      */
     @GetMapping("/done/{id}")
     public String changeDoneToFalse(@PathVariable int id,
-                                    Model model,
-                                    HttpServletRequest request) {
-        addUserAsAttributeToModel(model, request);
+                                    Model model) {
 
         if (taskService.updateStatusById(id, true)) {
             return "redirect:/tasks/" + id;
@@ -178,17 +163,6 @@ public class TaskController {
                 "Не удалось обновить статус задачи");
 
         return "/errors/404";
-    }
-
-    public void addUserAsAttributeToModel(Model model, HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            user = new User();
-            user.setName("Гость");
-        }
-
-        model.addAttribute("user", user);
     }
 
 }

@@ -14,7 +14,7 @@ public class SimpleUserService implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public Optional<Integer> save(User user) {
+    public Optional<User> save(User user) {
         return userRepository.save(user);
     }
 

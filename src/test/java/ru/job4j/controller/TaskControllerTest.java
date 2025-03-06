@@ -10,9 +10,7 @@ import ru.job4j.dto.CreateTaskDto;
 import ru.job4j.dto.TaskDto;
 import ru.job4j.entity.User;
 import ru.job4j.service.SimpleTaskService;
-import ru.job4j.service.SimpleUserService;
 import ru.job4j.service.TaskService;
-import ru.job4j.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -29,8 +27,6 @@ class TaskControllerTest {
 
     private TaskService taskService;
 
-    private UserService userService;
-
     private TaskController tasksController;
 
     private Collection<TaskDto> taskDtoList;
@@ -42,10 +38,9 @@ class TaskControllerTest {
     @BeforeEach
     public void initServices() {
         taskService = mock(SimpleTaskService.class);
-        userService = mock(SimpleUserService.class);
         session = mock(HttpSession.class);
         request = mock(HttpServletRequest.class);
-        tasksController = new TaskController(userService, taskService);
+        tasksController = new TaskController(taskService);
     }
 
     @Test
@@ -78,7 +73,7 @@ class TaskControllerTest {
         Model model = new ConcurrentModel();
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
-        String view = tasksController.getCreationPage(model, request);
+        String view = tasksController.getCreationPage(model);
 
         assertThat(view).isEqualTo("/tasks/create");
     }
@@ -127,7 +122,7 @@ class TaskControllerTest {
         when(session.getAttribute("user")).thenReturn(user);
 
         Model model = new ConcurrentModel();
-        String view = tasksController.getPageById(createdTaskDto.getId(), model, request);
+        String view = tasksController.getPageById(createdTaskDto.getId(), model);
         Object actualTaskDto = model.getAttribute("taskDto");
 
         assertThat(view).isEqualTo("/tasks/edit");
@@ -143,7 +138,7 @@ class TaskControllerTest {
         String expectedMassage = "Задача с указанным идентификатором не найдена";
 
         Model model = new ConcurrentModel();
-        String view = tasksController.getPageById(user.getId(), model, request);
+        String view = tasksController.getPageById(user.getId(), model);
         String actualMessage = (String) model.getAttribute("message");
 
         assertThat(view).isEqualTo("/errors/404");
@@ -161,7 +156,7 @@ class TaskControllerTest {
         when(taskService.update(updatedTaskDto)).thenReturn(true);
 
         Model model = new ConcurrentModel();
-        String view = tasksController.update(updatedTaskDto, model, request);
+        String view = tasksController.update(updatedTaskDto, model);
 
         assertThat(view).isEqualTo("redirect:/tasks/all");
     }
@@ -178,7 +173,7 @@ class TaskControllerTest {
         when(taskService.update(updatedTaskDto)).thenReturn(false);
 
         Model model = new ConcurrentModel();
-        String view = tasksController.update(updatedTaskDto, model, request);
+        String view = tasksController.update(updatedTaskDto, model);
         String actualMessage = (String) model.getAttribute("message");
 
         assertThat(view).isEqualTo("/errors/404");
@@ -193,7 +188,7 @@ class TaskControllerTest {
         when(taskService.deleteById(anyInt())).thenReturn(true);
 
         Model model = new ConcurrentModel();
-        String view = tasksController.delete(user.getId(), model, request);
+        String view = tasksController.delete(user.getId(), model);
 
         assertThat(view).isEqualTo("redirect:/tasks/all");
     }
@@ -208,7 +203,7 @@ class TaskControllerTest {
         when(taskService.deleteById(anyInt())).thenReturn(false);
 
         Model model = new ConcurrentModel();
-        String view = tasksController.delete(user.getId(), model, request);
+        String view = tasksController.delete(user.getId(), model);
         String actualMessage = (String) model.getAttribute("message");
 
         assertThat(view).isEqualTo("/errors/404");
@@ -223,7 +218,7 @@ class TaskControllerTest {
         when(taskService.updateStatusById(anyInt(), anyBoolean())).thenReturn(true);
 
         Model model = new ConcurrentModel();
-        String view = tasksController.changeDoneToFalse(7, model, request);
+        String view = tasksController.changeDoneToFalse(7, model);
 
         assertThat(view).isEqualTo("redirect:/tasks/7");
     }
@@ -238,7 +233,7 @@ class TaskControllerTest {
         when(taskService.updateStatusById(anyInt(), anyBoolean())).thenReturn(false);
 
         Model model = new ConcurrentModel();
-        String view = tasksController.changeDoneToFalse(7, model, request);
+        String view = tasksController.changeDoneToFalse(7, model);
         String actualMessage = (String) model.getAttribute("message");
 
         assertThat(view).isEqualTo("/errors/404");
