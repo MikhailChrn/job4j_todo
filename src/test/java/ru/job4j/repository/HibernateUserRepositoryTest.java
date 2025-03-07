@@ -56,7 +56,7 @@ class HibernateUserRepositoryTest {
                 .build()).get();
 
         User savedUser = userRepository
-                .findById(user.getId()).get();
+                .findByLoginAndPassword(user.getLogin(), user.getPassword()).get();
 
         assertThat(savedUser).isEqualTo(user);
     }

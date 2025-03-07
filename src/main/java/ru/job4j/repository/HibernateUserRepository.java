@@ -27,15 +27,10 @@ public class HibernateUserRepository implements UserRepository {
     @Override
     public Optional<User> save(User user) {
         Session session = this.sessionFactory.openSession();
-        Integer userId = null;
         try {
             Transaction transaction = session.beginTransaction();
-            userId = (Integer) session.save(user);
+            session.save(user);
             transaction.commit();
-            if (userId != null) {
-                user.setId(userId);
-                return Optional.of(user);
-            }
 
         } catch (Exception ex) {
             session.getTransaction().rollback();
@@ -43,9 +38,11 @@ public class HibernateUserRepository implements UserRepository {
 
         } finally {
             session.close();
+
         }
 
-        return Optional.empty();
+        return Optional.of(user);
+
     }
 
     /**
