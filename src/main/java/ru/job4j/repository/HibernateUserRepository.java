@@ -22,27 +22,27 @@ public class HibernateUserRepository implements UserRepository {
      * Сохранить в базе задачу.
      *
      * @param user задача
-     * @return Optional задача с id
+     * @return Optional задача (без актуального ID)
      */
     @Override
     public Optional<User> save(User user) {
         Session session = this.sessionFactory.openSession();
         try {
             Transaction transaction = session.beginTransaction();
-            session.save(user);
+            session.persist(user);
             transaction.commit();
+
+            return Optional.of(user);
 
         } catch (Exception ex) {
             session.getTransaction().rollback();
-            throw new RepositoryException(ex.getMessage());
 
         } finally {
             session.close();
 
         }
 
-        return Optional.of(user);
-
+        return Optional.empty();
     }
 
     /**
