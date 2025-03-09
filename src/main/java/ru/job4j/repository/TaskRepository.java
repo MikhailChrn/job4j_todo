@@ -19,7 +19,7 @@ public interface TaskRepository {
 
     Collection<Task> findAllOrderByCreated();
 
-    Task save(Task film);
+    Task save(Task task);
 
     boolean deleteById(int id);
 

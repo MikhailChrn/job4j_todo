@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.springframework.stereotype.Repository;
 import ru.job4j.exception.RepositoryException;
 import ru.job4j.entity.Task;
 
@@ -13,7 +12,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 @AllArgsConstructor
 public class HibernateTaskRepository implements TaskRepository {
 
