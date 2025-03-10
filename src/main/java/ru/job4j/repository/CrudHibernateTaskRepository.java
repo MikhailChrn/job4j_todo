@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.job4j.entity.Task;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -96,11 +95,15 @@ public class CrudHibernateTaskRepository implements TaskRepository {
      */
     @Override
     public Task save(Task task) {
+        try {
+            crudRepository.run(session -> session.persist(task));
+            return task;
 
-        task.setCreated(LocalDateTime.now());
-        crudRepository.run(session -> session.persist(task));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        return task;
+        return null;
     }
 
     /**

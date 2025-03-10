@@ -22,8 +22,15 @@ public class CrudHibernateUserRepository implements UserRepository {
      */
     @Override
     public Optional<User> save(User user) {
-        crudRepository.run(session -> session.persist(user));
-        return Optional.of(user);
+        try {
+            crudRepository.run(session -> session.persist(user));
+            return Optional.of(user);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return Optional.empty();
     }
 
     /**
@@ -60,10 +67,10 @@ public class CrudHibernateUserRepository implements UserRepository {
     public Optional<User> findByLoginAndPassword(String login,
                                                  String password) {
         return crudRepository.query(
-                        "FROM User U WHERE U.login = :fLogin "
-                                + "AND U.password = :fPassword", User.class,
-                        Map.of("fLogin", login, "fPassword", password)
-                ).stream().findFirst();
+                "FROM User U WHERE U.login = :fLogin "
+                        + "AND U.password = :fPassword", User.class,
+                Map.of("fLogin", login, "fPassword", password)
+        ).stream().findFirst();
     }
 
     /**
@@ -75,8 +82,8 @@ public class CrudHibernateUserRepository implements UserRepository {
     public boolean deleteById(int id) {
         int count = crudRepository.tx(session ->
                 session.createQuery("DELETE User U WHERE U.id = :id")
-                .setParameter("id", id)
-                .executeUpdate()
+                        .setParameter("id", id)
+                        .executeUpdate()
         );
 
         return count > 0;
