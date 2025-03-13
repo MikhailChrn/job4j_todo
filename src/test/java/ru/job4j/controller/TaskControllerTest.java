@@ -48,11 +48,11 @@ class TaskControllerTest {
         User user = User.builder().id(9).build();
 
         taskDtoList = List.of(
-                new TaskDto(3, "title 3", 9,
+                new TaskDto(3, "title 3", user,
                         "Test-descr 3", LocalDateTime.now(), true),
-                new TaskDto(5, "title 5", 9,
+                new TaskDto(5, "title 5", user,
                         "Test-descr 5", LocalDateTime.now(), false),
-                new TaskDto(7, "title 7", 9,
+                new TaskDto(7, "title 7", user,
                         "Test-descr 7", LocalDateTime.now(), true));
 
         when(taskService.findAllByUserId(anyInt())).thenReturn(taskDtoList);
@@ -114,7 +114,8 @@ class TaskControllerTest {
     @Test
     public void whenRequestTaskPageThenGetIt() {
         User user = User.builder().id(1).build();
-        TaskDto createdTaskDto = new TaskDto(7, "test-7", 1,
+
+        TaskDto createdTaskDto = new TaskDto(7, "test-7", user,
                 "test-descr-7", LocalDateTime.now(), false);
 
         when(taskService.findById(createdTaskDto.getId())).thenReturn(Optional.of(createdTaskDto));
@@ -150,7 +151,7 @@ class TaskControllerTest {
         User user = User.builder().id(1).build();
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
-        TaskDto updatedTaskDto = new TaskDto(7, "test-7", 1,
+        TaskDto updatedTaskDto = new TaskDto(7, "test-7", user,
                 "test-descr-7", LocalDateTime.now(), false);
 
         when(taskService.update(updatedTaskDto)).thenReturn(true);
@@ -166,7 +167,7 @@ class TaskControllerTest {
         User user = User.builder().id(1).build();
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
-        TaskDto updatedTaskDto = new TaskDto(7, "test-7", 1,
+        TaskDto updatedTaskDto = new TaskDto(7, "test-7", user,
                 "test-descr-7", LocalDateTime.now(), false);
         String expectedMassage = "Не удалось изменить задачу с указанным идентификатором";
 

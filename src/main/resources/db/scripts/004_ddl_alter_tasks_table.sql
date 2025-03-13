@@ -1,3 +1,3 @@
 ALTER TABLE tasks
 ADD COLUMN
-user_id int not null;
+user_id INT NOT NULL REFERENCES users(id);

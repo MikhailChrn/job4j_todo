@@ -24,8 +24,9 @@ public class Task {
 
     private String title;
 
-    @Column(name = "user_id")
-    private int userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     private String description;
 

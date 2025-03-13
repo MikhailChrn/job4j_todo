@@ -7,9 +7,11 @@ import ru.job4j.dto.CreateTaskDto;
 import org.mapstruct.factory.Mappers;
 
 import ru.job4j.dto.TaskDto;
+import ru.job4j.entity.User;
 import ru.job4j.mapper.TaskMapper;
 import ru.job4j.entity.Task;
 import ru.job4j.repository.TaskRepository;
+import ru.job4j.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -24,23 +26,30 @@ import static org.mockito.Mockito.when;
 class SimpleTaskServiceTest {
 
     private static TaskRepository taskRepository;
+    private static UserRepository userRepository;
     private static TaskMapper taskMapper;
     private static TaskService taskService;
 
     @BeforeAll
     public static void initServices() {
         taskRepository = mock(TaskRepository.class);
+        userRepository = mock(UserRepository.class);
         taskMapper = Mappers.getMapper(TaskMapper.class);
-        taskService = new SimpleTaskService(taskRepository, taskMapper);
+        taskService = new SimpleTaskService(taskRepository,
+                taskMapper,
+                userRepository);
     }
 
     @Test
     public void whenAddTaskThenFindTaskByIdSuccessfull() {
+        User user = User.builder().id(1).build();
+
         CreateTaskDto dto = new CreateTaskDto("test", "Test-description", 1);
-        Task result = Task.builder().description(dto.getDescription()).build();
+        Task result = Task.builder().user(user).description(dto.getDescription()).build();
 
         when(taskRepository.save(any(Task.class)))
                 .thenReturn(Task.builder().description(dto.getDescription()).build());
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
         when(taskRepository.findById(anyInt()))
                 .thenReturn(Optional.of(result));
 
@@ -48,7 +57,7 @@ class SimpleTaskServiceTest {
         assertThat(taskService.findById(anyInt()).get())
                 .isEqualTo(new TaskDto(result.getId(),
                         result.getTitle(),
-                        result.getUserId(),
+                        result.getUser(),
                         result.getDescription(),
                         result.getCreated(),
                         result.isDone()));
@@ -73,13 +82,19 @@ class SimpleTaskServiceTest {
 
     @Test
     public void whenRequestAllTaskThenReturnCollectionTaskDto() {
-        Collection<Task> taskRepositoryResponse = List.of(
-                new Task(1, "test1", 1, "test-descr-1", LocalDateTime.now(), true),
-                new Task(2, "test2", 1, "test-descr-2", LocalDateTime.now(), true),
-                new Task(3, "test3", 1, "test-descr-3", LocalDateTime.now(), true));
+        User user = User.builder().id(1).build();
 
-        when(taskRepository.findAllByUserId(1))
+        Collection<Task> taskRepositoryResponse = List.of(
+                new Task(1, "test1", user,
+                        "test-descr-1", LocalDateTime.now(), true),
+                new Task(2, "test2", user,
+                        "test-descr-2", LocalDateTime.now(), true),
+                new Task(3, "test3", user,
+                        "test-descr-3", LocalDateTime.now(), true));
+
+        when(taskRepository.findAllByUser(user))
                 .thenReturn(taskRepositoryResponse);
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
 
         assertThat(taskService.findAllByUserId(1).size())
                 .isEqualTo(taskRepositoryResponse.size());

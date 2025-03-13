@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import ru.job4j.entity.User;
 import ru.job4j.exception.RepositoryException;
 import ru.job4j.entity.Task;
 
@@ -51,13 +52,13 @@ public class HibernateTaskRepository implements TaskRepository {
      * @return всех список задач
      */
     @Override
-    public Collection<Task> findAllByUserId(int userId) {
+    public Collection<Task> findAllByUser(User user) {
         Session session = sessionFactory.openSession();
         List<Task> result = List.of();
         try {
             session.beginTransaction();
-            result = session.createQuery("FROM Task T WHERE T.userId = :userId")
-                    .setParameter("userId", userId)
+            result = session.createQuery("FROM Task T WHERE T.user = :user")
+                    .setParameter("user", user)
                     .getResultList();
             session.getTransaction().commit();
 
@@ -77,15 +78,15 @@ public class HibernateTaskRepository implements TaskRepository {
      * @return новых список задач
      */
     @Override
-    public Collection<Task> findAllNewByUserId(int userId) {
+    public Collection<Task> findAllNewByUser(User user) {
         Session session = sessionFactory.openSession();
         List<Task> result = List.of();
         try {
             session.beginTransaction();
             result = session.createQuery("FROM Task T "
-                            + "WHERE T.userId = :userId "
+                            + "WHERE T.user = :user "
                             + "AND T.done = false")
-                    .setParameter("userId", userId)
+                    .setParameter("user", user)
                     .getResultList();
             session.getTransaction().commit();
 
@@ -105,7 +106,7 @@ public class HibernateTaskRepository implements TaskRepository {
      * @return выполненных список задач
      */
     @Override
-    public Collection<Task> findAllCompletedByUserId(int userId) {
+    public Collection<Task> findAllCompletedByUser(User user) {
         Session session = sessionFactory.openSession();
         List<Task> result = List.of();
         try {
@@ -113,7 +114,7 @@ public class HibernateTaskRepository implements TaskRepository {
             result = session.createQuery("FROM Task T "
                             + "WHERE T.userId = :userId "
                             + "AND T.done = true")
-                    .setParameter("userId", userId)
+                    .setParameter("user", user)
                     .getResultList();
             session.getTransaction().commit();
 
@@ -189,26 +190,22 @@ public class HibernateTaskRepository implements TaskRepository {
     @Override
     public Task save(Task task) {
         Session session = this.sessionFactory.openSession();
-        Integer taskId;
-        Task result = null;
         try {
             Transaction transaction = session.beginTransaction();
             task.setCreated(LocalDateTime.now());
-            taskId = (Integer) session.save(task);
-            if (taskId != null) {
-                result = session.get(Task.class, taskId);
-            }
+            session.persist(task);
             transaction.commit();
+
+            return task;
 
         } catch (Exception ex) {
             session.getTransaction().rollback();
-            throw new RepositoryException(ex.getMessage());
 
         } finally {
             session.close();
         }
 
-        return result;
+        return null;
     }
 
     /**
@@ -274,7 +271,7 @@ public class HibernateTaskRepository implements TaskRepository {
     /**
      * Сохранить в базе задачу.
      *
-     * @param id задачи
+     * @param id   задачи
      * @param done требуемый статус задачи
      * @return статус задачи успешно изменён
      */

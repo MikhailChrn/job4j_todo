@@ -3,6 +3,7 @@ package ru.job4j.repository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.job4j.entity.Task;
+import ru.job4j.entity.User;
 
 import java.util.Collection;
 import java.util.Map;
@@ -32,10 +33,10 @@ public class CrudHibernateTaskRepository implements TaskRepository {
      * @return всех список задач
      */
     @Override
-    public Collection<Task> findAllByUserId(int userId) {
+    public Collection<Task> findAllByUser(User user) {
 
-        return crudRepository.query("FROM Task T WHERE T.userId = :fUserId",
-                Task.class, Map.of("fUserId", userId));
+        return crudRepository.query("FROM Task T WHERE T.user = :user",
+                Task.class, Map.of("user", user));
     }
 
     /**
@@ -44,10 +45,10 @@ public class CrudHibernateTaskRepository implements TaskRepository {
      * @return новых список задач
      */
     @Override
-    public Collection<Task> findAllNewByUserId(int userId) {
+    public Collection<Task> findAllNewByUser(User user) {
 
-        return crudRepository.query("FROM Task T WHERE T.userId = :fUserId "
-                + "AND T.done = false", Task.class, Map.of("fUserId", userId));
+        return crudRepository.query("FROM Task T WHERE T.user = :user "
+                + "AND T.done = false", Task.class, Map.of("user", user));
     }
 
     /**
@@ -56,10 +57,10 @@ public class CrudHibernateTaskRepository implements TaskRepository {
      * @return выполненных список задач
      */
     @Override
-    public Collection<Task> findAllCompletedByUserId(int userId) {
+    public Collection<Task> findAllCompletedByUser(User user) {
 
-        return crudRepository.query("FROM Task T WHERE T.userId = :fUserId "
-                + "AND T.done = true", Task.class, Map.of("fUserId", userId));
+        return crudRepository.query("FROM Task T WHERE T.user = :user "
+                + "AND T.done = true", Task.class, Map.of("user", user));
     }
 
     /**

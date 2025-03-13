@@ -7,6 +7,7 @@ import ru.job4j.dto.TaskDto;
 import ru.job4j.mapper.TaskMapper;
 import ru.job4j.entity.Task;
 import ru.job4j.repository.TaskRepository;
+import ru.job4j.repository.UserRepository;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -20,23 +21,28 @@ public class SimpleTaskService implements TaskService {
 
     private final TaskMapper taskMapper;
 
+    private final UserRepository userRepository;
+
     @Override
     public Collection<TaskDto> findAllByUserId(int userId) {
-        return taskRepository.findAllByUserId(userId).stream()
+        return taskRepository
+                .findAllByUser(userRepository.findById(userId).get()).stream()
                 .map(taskMapper::getModelFromEntity)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Collection<TaskDto> findAllNewByUserId(int userId) {
-        return taskRepository.findAllNewByUserId(userId).stream()
+        return taskRepository
+                .findAllByUser(userRepository.findById(userId).get()).stream()
                 .map(taskMapper::getModelFromEntity)
                 .collect(Collectors.toList());
     }
 
     @Override
     public Collection<TaskDto> findAllCompletedByUserId(int userId) {
-        return taskRepository.findAllCompletedByUserId(userId).stream()
+        return taskRepository
+                .findAllByUser(userRepository.findById(userId).get()).stream()
                 .map(taskMapper::getModelFromEntity)
                 .collect(Collectors.toList());
     }
@@ -46,7 +52,7 @@ public class SimpleTaskService implements TaskService {
         return taskRepository.save(
                 Task.builder()
                         .title(dto.getTitle())
-                        .userId(dto.getUserId())
+                        .user(userRepository.findById(dto.getUserId()).get())
                         .description(dto.getDescription())
                         .build()) != null;
     }

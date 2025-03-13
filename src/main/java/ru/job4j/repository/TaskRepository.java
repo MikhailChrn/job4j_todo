@@ -1,6 +1,7 @@
 package ru.job4j.repository;
 
 import ru.job4j.entity.Task;
+import ru.job4j.entity.User;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -9,11 +10,11 @@ public interface TaskRepository {
 
     Optional<Task> findById(int id);
 
-    Collection<Task> findAllByUserId(int userId);
+    Collection<Task> findAllByUser(User user);
 
-    Collection<Task> findAllNewByUserId(int userId);
+    Collection<Task> findAllNewByUser(User user);
 
-    Collection<Task> findAllCompletedByUserId(int userId);
+    Collection<Task> findAllCompletedByUser(User user);
 
     Collection<Task> findByLikeDescription(String key);
 
