@@ -2,17 +2,18 @@ package ru.job4j.service;
 
 import ru.job4j.dto.CreateTaskDto;
 import ru.job4j.dto.TaskDto;
+import ru.job4j.entity.User;
 
 import java.util.Collection;
 import java.util.Optional;
 
 public interface TaskService {
 
-    Collection<TaskDto> findAllByUserId(int userId);
+    Collection<TaskDto> findAllByUser(User user);
 
-    Collection<TaskDto> findAllNewByUserId(int userId);
+    Collection<TaskDto> findAllNewByUser(User user);
 
-    Collection<TaskDto> findAllCompletedByUserId(int userId);
+    Collection<TaskDto> findAllCompletedByUser(User user);
 
     boolean add(CreateTaskDto dto);
 

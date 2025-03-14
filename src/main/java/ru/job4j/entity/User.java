@@ -1,15 +1,13 @@
 package ru.job4j.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "users")
 @Data
 @Builder
+@EqualsAndHashCode(of = {"id", "name"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {

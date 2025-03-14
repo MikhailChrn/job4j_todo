@@ -10,9 +10,9 @@ import java.time.format.DateTimeFormatter;
 @Table(name = "tasks")
 @Data
 @Builder
+@EqualsAndHashCode(of = {"id", "description"})
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = {"id", "description"})
 public class Task {
 
     private static final DateTimeFormatter FORMATTER

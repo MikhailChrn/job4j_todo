@@ -30,7 +30,7 @@ public class TaskController {
                 (User) request.getSession().getAttribute("user"));
 
         model.addAttribute("taskDtos",
-                taskService.findAllByUserId(optionalUser.get().getId()));
+                taskService.findAllByUser(optionalUser.get()));
         model.addAttribute("pageTitle", "Все задания");
         return "/tasks/list";
     }
@@ -46,7 +46,7 @@ public class TaskController {
                 (User) request.getSession().getAttribute("user"));
 
         model.addAttribute("taskDtos",
-                taskService.findAllNewByUserId(optionalUser.get().getId()));
+                taskService.findAllNewByUser(optionalUser.get()));
         model.addAttribute("pageTitle", "Новые задания");
         return "/tasks/list";
     }
@@ -62,7 +62,7 @@ public class TaskController {
                 (User) request.getSession().getAttribute("user"));
 
         model.addAttribute("taskDtos",
-                taskService.findAllCompletedByUserId(optionalUser.get().getId()));
+                taskService.findAllCompletedByUser(optionalUser.get()));
         model.addAttribute("pageTitle", "Выполненные задания");
         return "/tasks/list";
     }
