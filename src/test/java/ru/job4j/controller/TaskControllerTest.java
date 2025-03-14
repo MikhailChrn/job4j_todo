@@ -18,8 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -55,7 +54,7 @@ class TaskControllerTest {
                 new TaskDto(7, "title 7", user,
                         "Test-descr 7", LocalDateTime.now(), true));
 
-        when(taskService.findAllByUserId(anyInt())).thenReturn(taskDtoList);
+        when(taskService.findAllByUser(any(User.class))).thenReturn(taskDtoList);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
 

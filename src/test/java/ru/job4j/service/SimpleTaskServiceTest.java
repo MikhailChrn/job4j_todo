@@ -96,9 +96,9 @@ class SimpleTaskServiceTest {
                 .thenReturn(taskRepositoryResponse);
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
 
-        assertThat(taskService.findAllByUserId(1).size())
+        assertThat(taskService.findAllByUser(user).size())
                 .isEqualTo(taskRepositoryResponse.size());
-        assertThat(taskService.findAllByUserId(1).stream()
+        assertThat(taskService.findAllByUser(user).stream()
                 .findFirst().get().getClass())
                 .isEqualTo(TaskDto.class);
     }

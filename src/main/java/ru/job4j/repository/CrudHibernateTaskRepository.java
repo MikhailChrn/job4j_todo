@@ -35,20 +35,8 @@ public class CrudHibernateTaskRepository implements TaskRepository {
     @Override
     public Collection<Task> findAllByUser(User user) {
 
-        return crudRepository.query("FROM Task T WHERE T.user = :user",
+        return crudRepository.query("FROM Task t WHERE t.user = :user",
                 Task.class, Map.of("user", user));
-    }
-
-    /**
-     * Список новых задач
-     *
-     * @return новых список задач
-     */
-    @Override
-    public Collection<Task> findAllNewByUser(User user) {
-
-        return crudRepository.query("FROM Task T WHERE T.user = :user "
-                + "AND T.done = false", Task.class, Map.of("user", user));
     }
 
     /**
@@ -57,10 +45,10 @@ public class CrudHibernateTaskRepository implements TaskRepository {
      * @return выполненных список задач
      */
     @Override
-    public Collection<Task> findAllCompletedByUser(User user) {
+    public Collection<Task> findAllByDoneByUser(User user, boolean done) {
 
-        return crudRepository.query("FROM Task T WHERE T.user = :user "
-                + "AND T.done = true", Task.class, Map.of("user", user));
+        return crudRepository.query("FROM Task t WHERE t.user = :user "
+                + "AND t.done = :done", Task.class, Map.of("user", user, "done", done));
     }
 
     /**
@@ -72,7 +60,7 @@ public class CrudHibernateTaskRepository implements TaskRepository {
     @Override
     public Collection<Task> findByLikeDescription(String key) {
 
-        return crudRepository.query("FROM Task T WHERE T.description LIKE :key",
+        return crudRepository.query("FROM Task t WHERE t.description LIKE :key",
                 Task.class, Map.of("key", "%" + key + "%"));
     }
 
@@ -84,8 +72,8 @@ public class CrudHibernateTaskRepository implements TaskRepository {
     @Override
     public Collection<Task> findAllOrderByCreated() {
 
-        return crudRepository.query("FROM Task T ORDER BY T.created "
-                + "WHERE T.userId = :fUserId", Task.class, Map.of("fUserId", 0));
+        return crudRepository.query("FROM Task t ORDER BY t.created "
+                + "WHERE t.userId = :fUserId", Task.class, Map.of("fUserId", 0));
     }
 
     /**
@@ -115,7 +103,7 @@ public class CrudHibernateTaskRepository implements TaskRepository {
     @Override
     public boolean deleteById(int id) {
         int count = crudRepository.tx(session ->
-                session.createQuery("DELETE Task T WHERE T.id = :fId")
+                session.createQuery("DELETE Task t WHERE t.id = :fId")
                         .setParameter("fId", id)
                         .executeUpdate()
         );
@@ -132,9 +120,9 @@ public class CrudHibernateTaskRepository implements TaskRepository {
     public boolean update(Task task) {
 
         int count = crudRepository.tx(session ->
-                session.createQuery("UPDATE Task T SET T.title = :fTitle, "
-                                + "T.description = :fDescription "
-                                + "WHERE T.id = :fId")
+                session.createQuery("UPDATE Task t SET t.title = :fTitle, "
+                                + "t.description = :fDescription "
+                                + "WHERE t.id = :fId")
                         .setParameter("fId", task.getId())
                         .setParameter("fTitle", task.getTitle())
                         .setParameter("fDescription", task.getDescription())
@@ -155,8 +143,8 @@ public class CrudHibernateTaskRepository implements TaskRepository {
     public boolean updateStatusById(int id, boolean done) {
 
         int count = crudRepository.tx(session ->
-                session.createQuery("UPDATE Task T SET T.done = :fDone "
-                                + "WHERE T.id = :fId")
+                session.createQuery("UPDATE Task t SET t.done = :fDone "
+                                + "WHERE t.id = :fId")
                         .setParameter("fDone", done)
                         .setParameter("fId", id)
                         .executeUpdate()

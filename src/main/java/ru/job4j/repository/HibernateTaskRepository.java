@@ -73,48 +73,21 @@ public class HibernateTaskRepository implements TaskRepository {
     }
 
     /**
-     * Список новых задач
-     *
-     * @return новых список задач
-     */
-    @Override
-    public Collection<Task> findAllNewByUser(User user) {
-        Session session = sessionFactory.openSession();
-        List<Task> result = List.of();
-        try {
-            session.beginTransaction();
-            result = session.createQuery("FROM Task T "
-                            + "WHERE T.user = :user "
-                            + "AND T.done = false")
-                    .setParameter("user", user)
-                    .getResultList();
-            session.getTransaction().commit();
-
-        } catch (Exception ex) {
-            session.getTransaction().rollback();
-
-        } finally {
-            session.close();
-        }
-
-        return result;
-    }
-
-    /**
      * Список выполненных задач
      *
-     * @return выполненных список задач
+     * @return список задач
      */
     @Override
-    public Collection<Task> findAllCompletedByUser(User user) {
+    public Collection<Task> findAllByDoneByUser(User user, boolean done) {
         Session session = sessionFactory.openSession();
         List<Task> result = List.of();
         try {
             session.beginTransaction();
             result = session.createQuery("FROM Task T "
                             + "WHERE T.userId = :userId "
-                            + "AND T.done = true")
+                            + "AND T.done = :done")
                     .setParameter("user", user)
+                    .setParameter("done", done)
                     .getResultList();
             session.getTransaction().commit();
 

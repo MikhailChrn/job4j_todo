@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.job4j.dto.CreateTaskDto;
 import ru.job4j.dto.TaskDto;
+import ru.job4j.entity.User;
 import ru.job4j.mapper.TaskMapper;
 import ru.job4j.entity.Task;
 import ru.job4j.repository.TaskRepository;
 import ru.job4j.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,25 +26,25 @@ public class SimpleTaskService implements TaskService {
     private final UserRepository userRepository;
 
     @Override
-    public Collection<TaskDto> findAllByUserId(int userId) {
+    public Collection<TaskDto> findAllByUser(User user) {
         return taskRepository
-                .findAllByUser(userRepository.findById(userId).get()).stream()
+                .findAllByUser(user).stream()
                 .map(taskMapper::getModelFromEntity)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Collection<TaskDto> findAllNewByUserId(int userId) {
+    public Collection<TaskDto> findAllNewByUser(User user) {
         return taskRepository
-                .findAllByUser(userRepository.findById(userId).get()).stream()
+                .findAllByDoneByUser(user, false).stream()
                 .map(taskMapper::getModelFromEntity)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Collection<TaskDto> findAllCompletedByUserId(int userId) {
+    public Collection<TaskDto> findAllCompletedByUser(User user) {
         return taskRepository
-                .findAllByUser(userRepository.findById(userId).get()).stream()
+                .findAllByDoneByUser(user, true).stream()
                 .map(taskMapper::getModelFromEntity)
                 .collect(Collectors.toList());
     }
@@ -54,6 +56,7 @@ public class SimpleTaskService implements TaskService {
                         .title(dto.getTitle())
                         .user(userRepository.findById(dto.getUserId()).get())
                         .description(dto.getDescription())
+                        .created(LocalDateTime.now())
                         .build()) != null;
     }
 

@@ -12,9 +12,7 @@ public interface TaskRepository {
 
     Collection<Task> findAllByUser(User user);
 
-    Collection<Task> findAllNewByUser(User user);
-
-    Collection<Task> findAllCompletedByUser(User user);
+    Collection<Task> findAllByDoneByUser(User user, boolean done);
 
     Collection<Task> findByLikeDescription(String key);
 
