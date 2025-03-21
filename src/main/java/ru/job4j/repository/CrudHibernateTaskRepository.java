@@ -23,7 +23,7 @@ public class CrudHibernateTaskRepository implements TaskRepository {
     @Override
     public Optional<Task> findById(int id) {
 
-        return crudRepository.optional("FROM Task T WHERE T.id = :fId",
+        return crudRepository.optional("FROM Task t JOIN FETCH t.priority WHERE t.id = :fId",
                 Task.class, Map.of("fId", id));
     }
 
@@ -35,7 +35,9 @@ public class CrudHibernateTaskRepository implements TaskRepository {
     @Override
     public Collection<Task> findAllByUser(User user) {
 
-        return crudRepository.query("FROM Task t WHERE t.user = :user",
+        return crudRepository.query("FROM Task t "
+                        + "JOIN FETCH t.priority "
+                        + "WHERE t.user = :user",
                 Task.class, Map.of("user", user));
     }
 
@@ -47,8 +49,11 @@ public class CrudHibernateTaskRepository implements TaskRepository {
     @Override
     public Collection<Task> findAllByDoneByUser(User user, boolean done) {
 
-        return crudRepository.query("FROM Task t WHERE t.user = :user "
-                + "AND t.done = :done", Task.class, Map.of("user", user, "done", done));
+        return crudRepository.query("FROM Task t "
+                        + "JOIN FETCH t.priority "
+                        + "WHERE t.user = :user "
+                        + "AND t.done = :done",
+                Task.class, Map.of("user", user, "done", done));
     }
 
     /**
@@ -60,7 +65,9 @@ public class CrudHibernateTaskRepository implements TaskRepository {
     @Override
     public Collection<Task> findByLikeDescription(String key) {
 
-        return crudRepository.query("FROM Task t WHERE t.description LIKE :key",
+        return crudRepository.query("FROM Task t "
+                        + "JOIN FETCH t.priority "
+                        + "WHERE t.description LIKE :key",
                 Task.class, Map.of("key", "%" + key + "%"));
     }
 
@@ -72,8 +79,11 @@ public class CrudHibernateTaskRepository implements TaskRepository {
     @Override
     public Collection<Task> findAllOrderByCreated() {
 
-        return crudRepository.query("FROM Task t ORDER BY t.created "
-                + "WHERE t.userId = :fUserId", Task.class, Map.of("fUserId", 0));
+        return crudRepository.query("FROM Task t "
+                        + "JOIN FETCH t.priority "
+                        + "ORDER BY t.created "
+                + "WHERE t.userId = :fUserId",
+                Task.class, Map.of("fUserId", 0));
     }
 
     /**

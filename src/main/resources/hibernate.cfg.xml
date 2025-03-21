@@ -13,8 +13,9 @@
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
 
-        <mapping class="ru.job4j.entity.Task" />
-        <mapping class="ru.job4j.entity.User" />
+        <mapping class="ru.job4j.entity.Task"/>
+        <mapping class="ru.job4j.entity.User"/>
+        <mapping class="ru.job4j.entity.Priority"/>
 
     </session-factory>
 </hibernate-configuration>

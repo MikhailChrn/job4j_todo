@@ -1,6 +1,7 @@
 package ru.job4j.service;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import ru.job4j.dto.CreateTaskDto;
 
@@ -60,7 +61,8 @@ class SimpleTaskServiceTest {
                         result.getUser(),
                         result.getDescription(),
                         result.getCreated(),
-                        result.isDone()));
+                        result.isDone(),
+                        result.getPriority()));
     }
 
     @Test
@@ -85,12 +87,15 @@ class SimpleTaskServiceTest {
         User user = User.builder().id(1).build();
 
         Collection<Task> taskRepositoryResponse = List.of(
-                new Task(1, "test1", user,
-                        "test-descr-1", LocalDateTime.now(), true),
-                new Task(2, "test2", user,
-                        "test-descr-2", LocalDateTime.now(), true),
-                new Task(3, "test3", user,
-                        "test-descr-3", LocalDateTime.now(), true));
+                Task.builder().id(1).title("test1").user(user)
+                        .description("test-descr-1").created(LocalDateTime.now())
+                        .done(true).build(),
+                Task.builder().id(2).title("test2").user(user)
+                        .description("test-descr-2").created(LocalDateTime.now())
+                        .done(true).build(),
+                Task.builder().id(3).title("test3").user(user)
+                        .description("test-descr-3").created(LocalDateTime.now())
+                        .done(true).build());
 
         when(taskRepository.findAllByUser(user))
                 .thenReturn(taskRepositoryResponse);

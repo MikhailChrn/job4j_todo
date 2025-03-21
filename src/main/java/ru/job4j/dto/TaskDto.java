@@ -1,6 +1,7 @@
 package ru.job4j.dto;
 
 import lombok.Value;
+import ru.job4j.entity.Priority;
 import ru.job4j.entity.Task;
 import ru.job4j.entity.User;
 
@@ -17,4 +18,5 @@ public class TaskDto {
     String description;
     LocalDateTime created;
     boolean done;
+    Priority priority;
 }

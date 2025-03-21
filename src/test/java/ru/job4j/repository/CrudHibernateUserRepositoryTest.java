@@ -3,6 +3,7 @@ package ru.job4j.repository;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import ru.job4j.configuration.HibernateConfiguration;
 import ru.job4j.entity.User;
@@ -14,16 +15,13 @@ import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class CrudHibernateUserRepositoryTest {
-    private static SessionFactory sessionFactory;
-
-    private static CrudRepository crudRepository;
 
     private static UserRepository userRepository;
 
     @BeforeAll
     public static void initRepositories() {
-        sessionFactory = new HibernateConfiguration().sessionFactory();
-        crudRepository = new CrudRepository(sessionFactory);
+        SessionFactory sessionFactory = new HibernateConfiguration().sessionFactory();
+        CrudRepository crudRepository = new CrudRepository(sessionFactory);
         userRepository = new CrudHibernateUserRepository(crudRepository);
     }
 

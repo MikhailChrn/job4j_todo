@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.job4j.dto.CreateTaskDto;
 import ru.job4j.dto.TaskDto;
+import ru.job4j.entity.Priority;
 import ru.job4j.entity.User;
 import ru.job4j.mapper.TaskMapper;
 import ru.job4j.entity.Task;
@@ -57,6 +58,7 @@ public class SimpleTaskService implements TaskService {
                         .user(userRepository.findById(dto.getUserId()).get())
                         .description(dto.getDescription())
                         .created(LocalDateTime.now())
+                        .priority(null)
                         .build()) != null;
     }
 

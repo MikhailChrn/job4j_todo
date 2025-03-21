@@ -45,6 +45,13 @@
                             <div th:text="${#temporals.format(taskDto.created, 'dd-MM-yyyy HH:mm')}"/>
                         </label>
                     </div>
+
+                    <div class="col" align="left">
+                        <label class="font-weight-bold d-inline-block">Приоритет задачи:&nbsp;
+                            <div th:text="${taskDto.priority.name}"/>
+                        </label>
+                    </div>
+
                 </div>
             </div>
 

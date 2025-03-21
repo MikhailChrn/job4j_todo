@@ -8,6 +8,7 @@ import org.springframework.ui.ConcurrentModel;
 import org.springframework.ui.Model;
 import ru.job4j.dto.CreateTaskDto;
 import ru.job4j.dto.TaskDto;
+import ru.job4j.entity.Priority;
 import ru.job4j.entity.User;
 import ru.job4j.service.SimpleTaskService;
 import ru.job4j.service.TaskService;
@@ -48,11 +49,14 @@ class TaskControllerTest {
 
         taskDtoList = List.of(
                 new TaskDto(3, "title 3", user,
-                        "Test-descr 3", LocalDateTime.now(), true),
+                        "Test-descr 3", LocalDateTime.now(), true,
+                        Priority.builder().id(1).build()),
                 new TaskDto(5, "title 5", user,
-                        "Test-descr 5", LocalDateTime.now(), false),
+                        "Test-descr 5", LocalDateTime.now(), false,
+                        Priority.builder().id(1).build()),
                 new TaskDto(7, "title 7", user,
-                        "Test-descr 7", LocalDateTime.now(), true));
+                        "Test-descr 7", LocalDateTime.now(), true,
+                        Priority.builder().id(1).build()));
 
         when(taskService.findAllByUser(any(User.class))).thenReturn(taskDtoList);
         when(request.getSession()).thenReturn(session);
@@ -115,7 +119,8 @@ class TaskControllerTest {
         User user = User.builder().id(1).build();
 
         TaskDto createdTaskDto = new TaskDto(7, "test-7", user,
-                "test-descr-7", LocalDateTime.now(), false);
+                "test-descr-7", LocalDateTime.now(), false,
+                Priority.builder().id(1).build());
 
         when(taskService.findById(createdTaskDto.getId())).thenReturn(Optional.of(createdTaskDto));
         when(request.getSession()).thenReturn(session);
@@ -151,7 +156,8 @@ class TaskControllerTest {
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
         TaskDto updatedTaskDto = new TaskDto(7, "test-7", user,
-                "test-descr-7", LocalDateTime.now(), false);
+                "test-descr-7", LocalDateTime.now(), false,
+                Priority.builder().id(1).build());
 
         when(taskService.update(updatedTaskDto)).thenReturn(true);
 
@@ -167,7 +173,8 @@ class TaskControllerTest {
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
         TaskDto updatedTaskDto = new TaskDto(7, "test-7", user,
-                "test-descr-7", LocalDateTime.now(), false);
+                "test-descr-7", LocalDateTime.now(), false,
+                Priority.builder().id(1).build());
         String expectedMassage = "Не удалось изменить задачу с указанным идентификатором";
 
         when(taskService.update(updatedTaskDto)).thenReturn(false);

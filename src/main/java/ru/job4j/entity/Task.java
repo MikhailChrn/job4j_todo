@@ -34,4 +34,8 @@ public class Task {
 
     private boolean done;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "priority_id")
+    private Priority priority;
+
 }

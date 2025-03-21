@@ -3,6 +3,7 @@ package ru.job4j.repository;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import ru.job4j.configuration.HibernateConfiguration;
 import ru.job4j.entity.Task;
@@ -17,10 +18,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class CrudHibernateTaskRepositoryTest {
 
-    private static SessionFactory sessionFactory;
-
-    private static CrudRepository crudRepository;
-
     private static TaskRepository taskRepository;
 
     private static UserRepository userRepository;
@@ -29,8 +26,8 @@ class CrudHibernateTaskRepositoryTest {
 
     @BeforeAll
     public static void initRepositories() {
-        sessionFactory = new HibernateConfiguration().sessionFactory();
-        crudRepository = new CrudRepository(sessionFactory);
+        SessionFactory sessionFactory = new HibernateConfiguration().sessionFactory();
+        CrudRepository crudRepository = new CrudRepository(sessionFactory);
         taskRepository = new CrudHibernateTaskRepository(crudRepository);
         userRepository = new CrudHibernateUserRepository(crudRepository);
 
@@ -40,7 +37,7 @@ class CrudHibernateTaskRepositoryTest {
 
     @AfterEach
     public void clearTasks() {
-        taskRepository.findAllByUser(this.user).forEach(
+        taskRepository.findAllByUser(user).forEach(
                 task -> taskRepository.deleteById(task.getId())
         );
     }
@@ -60,7 +57,7 @@ class CrudHibernateTaskRepositoryTest {
     @Test
     public void whenSaveThenGetSame() {
         Task task = taskRepository.save(
-                Task.builder().title("Test").user(this.user)
+                Task.builder().title("Test").user(user)
                         .description("Test-description").build());
 
         Task savedTask = taskRepository
@@ -72,16 +69,16 @@ class CrudHibernateTaskRepositoryTest {
     @Test
     public void whenSaveSeveralThenGetAll() {
         Task task1 = taskRepository.save(
-                Task.builder().title("Test 1").user(this.user)
+                Task.builder().title("Test 1").user(user)
                         .description("Test-description 1").build());
         Task task2 = taskRepository.save(
-                Task.builder().title("Test 2").user(this.user)
+                Task.builder().title("Test 2").user(user)
                         .description("Test-description 2").build());
         Task task3 = taskRepository.save(
-                Task.builder().title("Test 3").user(this.user)
+                Task.builder().title("Test 3").user(user)
                         .description("Test-description 3").build());
 
-        Collection<Task> result = taskRepository.findAllByUser(this.user);
+        Collection<Task> result = taskRepository.findAllByUser(user);
 
         assertThat(result).isEqualTo(List.of(task1, task2, task3));
     }
@@ -89,7 +86,7 @@ class CrudHibernateTaskRepositoryTest {
     @Test
     public void whenDeleteThenGetEmptyOptional() {
         Task task = taskRepository.save(
-                Task.builder().title("Test").user(this.user)
+                Task.builder().title("Test").user(user)
                         .description("Test-description").build());
 
         assertThat(taskRepository.deleteById(task.getId())).isTrue();
@@ -102,13 +99,16 @@ class CrudHibernateTaskRepositoryTest {
         Task task = taskRepository.save(
                 Task.builder()
                         .title("title")
-                        .user(this.user)
+                        .user(user)
                         .description("before update")
                         .build());
 
-        Task updatedTask =
-                new Task(task.getId(), task.getTitle(), task.getUser(), "after update",
-                        task.getCreated(), task.isDone());
+        Task updatedTask = Task.builder().id(task.getId())
+                .title(task.getTitle())
+                .user(task.getUser())
+                .description("after update")
+                .created(task.getCreated())
+                .done(task.isDone()).build();
 
         boolean isUpdated = taskRepository.update(updatedTask);
         Task savedTask = taskRepository
@@ -120,9 +120,11 @@ class CrudHibernateTaskRepositoryTest {
 
     @Test
     public void whenUpdateUnexistingVacancyThenGetFalse() {
-        Task task = new Task(-1, "Test-title",
-                this.user, "Test-description",
-                LocalDateTime.now(), true);
+        Task task = Task.builder().id(-1)
+                .title("Test-title")
+                .user(user)
+                .created(LocalDateTime.now())
+                .done(true).build();
 
         boolean isUpdated = taskRepository.update(task);
 
@@ -132,21 +134,21 @@ class CrudHibernateTaskRepositoryTest {
     @Test
     public void whenGetOnlyCompletedTaskThenGetThese() {
         Task task1 = Task.builder().title("Test 1")
-                .user(this.user)
+                .user(user)
                 .description("Test-description-1")
                 .done(true).build();
         Task task2 = Task.builder().title("Test 2")
-                .user(this.user)
+                .user(user)
                 .description("Test-description-2").build();
         Task task3 = Task.builder().title("Test 3")
-                .user(this.user)
+                .user(user)
                 .description("Test-description-3")
                 .done(true).build();
         List.of(task1, task2, task3).forEach(
                 task -> taskRepository.save(task)
         );
 
-        Collection<Task> result = taskRepository.findAllByUser(this.user);
+        Collection<Task> result = taskRepository.findAllByUser(user);
 
         assertThat(result).isEqualTo(List.of(task1, task2, task3));
     }
@@ -155,7 +157,7 @@ class CrudHibernateTaskRepositoryTest {
     public void whenTryToUpdateDoneStatusThenGetSuccess() {
         Task originalTask = taskRepository.save(Task.builder()
                 .title("Test-title")
-                .user(this.user)
+                .user(user)
                 .description("Test-description")
                 .created(LocalDateTime.now())
                 .done(false)
