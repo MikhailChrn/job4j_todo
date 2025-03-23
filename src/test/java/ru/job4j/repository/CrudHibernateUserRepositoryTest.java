@@ -3,7 +3,6 @@ package ru.job4j.repository;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import ru.job4j.configuration.HibernateConfiguration;
 import ru.job4j.entity.User;

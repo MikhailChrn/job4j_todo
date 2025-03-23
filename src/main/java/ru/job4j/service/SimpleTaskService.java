@@ -8,6 +8,7 @@ import ru.job4j.entity.Priority;
 import ru.job4j.entity.User;
 import ru.job4j.mapper.TaskMapper;
 import ru.job4j.entity.Task;
+import ru.job4j.repository.PriorityRepository;
 import ru.job4j.repository.TaskRepository;
 import ru.job4j.repository.UserRepository;
 
@@ -22,9 +23,11 @@ public class SimpleTaskService implements TaskService {
 
     private final TaskRepository taskRepository;
 
-    private final TaskMapper taskMapper;
-
     private final UserRepository userRepository;
+
+    private final PriorityRepository priorityRepository;
+
+    private final TaskMapper taskMapper;
 
     @Override
     public Collection<TaskDto> findAllByUser(User user) {
@@ -58,7 +61,7 @@ public class SimpleTaskService implements TaskService {
                         .user(userRepository.findById(dto.getUserId()).get())
                         .description(dto.getDescription())
                         .created(LocalDateTime.now())
-                        .priority(null)
+                        .priority(priorityRepository.findById(2).get())
                         .build()) != null;
     }
 

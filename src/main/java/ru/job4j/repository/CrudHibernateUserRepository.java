@@ -51,7 +51,7 @@ public class CrudHibernateUserRepository implements UserRepository {
     @Override
     public Optional<User> findById(int id) {
 
-        return crudRepository.optional("FROM User U WHERE U.id = :fId",
+        return crudRepository.optional("FROM User u WHERE u.id = :fId",
                 User.class, Map.of("fId", id));
 
     }
@@ -67,8 +67,8 @@ public class CrudHibernateUserRepository implements UserRepository {
     public Optional<User> findByLoginAndPassword(String login,
                                                  String password) {
         return crudRepository.query(
-                "FROM User U WHERE U.login = :fLogin "
-                        + "AND U.password = :fPassword", User.class,
+                "FROM User u WHERE u.login = :fLogin "
+                        + "AND u.password = :fPassword", User.class,
                 Map.of("fLogin", login, "fPassword", password)
         ).stream().findFirst();
     }
@@ -81,8 +81,8 @@ public class CrudHibernateUserRepository implements UserRepository {
     @Override
     public boolean deleteById(int id) {
         int count = crudRepository.tx(session ->
-                session.createQuery("DELETE User U WHERE U.id = :id")
-                        .setParameter("id", id)
+                session.createQuery("DELETE User u WHERE u.id = :fId")
+                        .setParameter("fId", id)
                         .executeUpdate()
         );
 

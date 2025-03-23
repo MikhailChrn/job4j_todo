@@ -24,6 +24,12 @@ public class Task {
 
     private String title;
 
+    /**
+     * CascadeType.MERGE означает, что если мы обновляем в базе родительский объект,
+     * то это же нужно сделать и с его зависимыми объектами.
+     * @ManyToOne(cascade = CascadeType.MERGE)
+     */
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

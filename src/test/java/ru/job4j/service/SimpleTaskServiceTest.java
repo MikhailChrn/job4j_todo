@@ -1,16 +1,17 @@
 package ru.job4j.service;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import ru.job4j.dto.CreateTaskDto;
 
 import org.mapstruct.factory.Mappers;
 
 import ru.job4j.dto.TaskDto;
+import ru.job4j.entity.Priority;
 import ru.job4j.entity.User;
 import ru.job4j.mapper.TaskMapper;
 import ru.job4j.entity.Task;
+import ru.job4j.repository.PriorityRepository;
 import ru.job4j.repository.TaskRepository;
 import ru.job4j.repository.UserRepository;
 
@@ -28,6 +29,7 @@ class SimpleTaskServiceTest {
 
     private static TaskRepository taskRepository;
     private static UserRepository userRepository;
+    private static PriorityRepository priorityRepository;
     private static TaskMapper taskMapper;
     private static TaskService taskService;
 
@@ -35,15 +37,18 @@ class SimpleTaskServiceTest {
     public static void initServices() {
         taskRepository = mock(TaskRepository.class);
         userRepository = mock(UserRepository.class);
+        priorityRepository = mock(PriorityRepository.class);
         taskMapper = Mappers.getMapper(TaskMapper.class);
         taskService = new SimpleTaskService(taskRepository,
-                taskMapper,
-                userRepository);
+                userRepository,
+                priorityRepository,
+                taskMapper);
     }
 
     @Test
     public void whenAddTaskThenFindTaskByIdSuccessfull() {
         User user = User.builder().id(1).build();
+        Priority priority = Priority.builder().id(1).build();
 
         CreateTaskDto dto = new CreateTaskDto("test", "Test-description", 1);
         Task result = Task.builder().user(user).description(dto.getDescription()).build();
@@ -51,6 +56,7 @@ class SimpleTaskServiceTest {
         when(taskRepository.save(any(Task.class)))
                 .thenReturn(Task.builder().description(dto.getDescription()).build());
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
+        when(priorityRepository.findById(anyInt())).thenReturn(Optional.of(priority));
         when(taskRepository.findById(anyInt()))
                 .thenReturn(Optional.of(result));
 

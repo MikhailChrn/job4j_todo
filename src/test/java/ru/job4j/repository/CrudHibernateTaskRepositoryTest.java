@@ -3,9 +3,9 @@ package ru.job4j.repository;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import ru.job4j.configuration.HibernateConfiguration;
+import ru.job4j.entity.Priority;
 import ru.job4j.entity.Task;
 import ru.job4j.entity.User;
 
@@ -22,7 +22,11 @@ class CrudHibernateTaskRepositoryTest {
 
     private static UserRepository userRepository;
 
+    private static PriorityRepository priorityRepository;
+
     private static User user;
+
+    private static Priority priority;
 
     @BeforeAll
     public static void initRepositories() {
@@ -30,9 +34,12 @@ class CrudHibernateTaskRepositoryTest {
         CrudRepository crudRepository = new CrudRepository(sessionFactory);
         taskRepository = new CrudHibernateTaskRepository(crudRepository);
         userRepository = new CrudHibernateUserRepository(crudRepository);
+        priorityRepository = new CrudHibernarePriorityRepository(crudRepository);
 
         user = userRepository.save(User.builder().name("name")
                 .login("login").password("password").build()).get();
+        priority = priorityRepository.findById(1).get();
+
     }
 
     @AfterEach
@@ -58,7 +65,9 @@ class CrudHibernateTaskRepositoryTest {
     public void whenSaveThenGetSame() {
         Task task = taskRepository.save(
                 Task.builder().title("Test").user(user)
-                        .description("Test-description").build());
+                        .description("Test-description")
+                        .priority(priority)
+                        .build());
 
         Task savedTask = taskRepository
                 .findById(task.getId()).get();
@@ -70,13 +79,16 @@ class CrudHibernateTaskRepositoryTest {
     public void whenSaveSeveralThenGetAll() {
         Task task1 = taskRepository.save(
                 Task.builder().title("Test 1").user(user)
-                        .description("Test-description 1").build());
+                        .description("Test-description 1")
+                        .done(true).priority(priority).build());
         Task task2 = taskRepository.save(
                 Task.builder().title("Test 2").user(user)
-                        .description("Test-description 2").build());
+                        .description("Test-description 2")
+                        .done(false).priority(priority).build());
         Task task3 = taskRepository.save(
                 Task.builder().title("Test 3").user(user)
-                        .description("Test-description 3").build());
+                        .description("Test-description 3")
+                        .done(true).priority(priority).build());
 
         Collection<Task> result = taskRepository.findAllByUser(user);
 
@@ -101,6 +113,7 @@ class CrudHibernateTaskRepositoryTest {
                         .title("title")
                         .user(user)
                         .description("before update")
+                        .priority(priority)
                         .build());
 
         Task updatedTask = Task.builder().id(task.getId())
@@ -108,7 +121,8 @@ class CrudHibernateTaskRepositoryTest {
                 .user(task.getUser())
                 .description("after update")
                 .created(task.getCreated())
-                .done(task.isDone()).build();
+                .done(task.isDone())
+                .priority(task.getPriority()).build();
 
         boolean isUpdated = taskRepository.update(updatedTask);
         Task savedTask = taskRepository
@@ -136,14 +150,15 @@ class CrudHibernateTaskRepositoryTest {
         Task task1 = Task.builder().title("Test 1")
                 .user(user)
                 .description("Test-description-1")
-                .done(true).build();
+                .done(true).priority(priority).build();
         Task task2 = Task.builder().title("Test 2")
                 .user(user)
-                .description("Test-description-2").build();
+                .description("Test-description-2")
+                .done(false).priority(priority).build();
         Task task3 = Task.builder().title("Test 3")
                 .user(user)
                 .description("Test-description-3")
-                .done(true).build();
+                .done(true).priority(priority).build();
         List.of(task1, task2, task3).forEach(
                 task -> taskRepository.save(task)
         );
@@ -161,6 +176,7 @@ class CrudHibernateTaskRepositoryTest {
                 .description("Test-description")
                 .created(LocalDateTime.now())
                 .done(false)
+                .priority(priority)
                 .build());
 
         taskRepository.updateStatusById(originalTask.getId(), true);
