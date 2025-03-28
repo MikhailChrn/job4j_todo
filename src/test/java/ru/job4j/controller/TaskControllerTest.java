@@ -7,9 +7,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.ui.ConcurrentModel;
 import org.springframework.ui.Model;
 import ru.job4j.dto.CreateTaskDto;
+import ru.job4j.dto.EditTaskDto;
 import ru.job4j.dto.TaskDto;
+import ru.job4j.entity.Category;
 import ru.job4j.entity.Priority;
 import ru.job4j.entity.User;
+import ru.job4j.service.CategoryService;
+import ru.job4j.service.PriorityService;
 import ru.job4j.service.SimpleTaskService;
 import ru.job4j.service.TaskService;
 
@@ -27,6 +31,10 @@ class TaskControllerTest {
 
     private TaskService taskService;
 
+    private CategoryService categoryService;
+
+    private PriorityService priorityService;
+
     private TaskController tasksController;
 
     private Collection<TaskDto> taskDtoList;
@@ -38,25 +46,31 @@ class TaskControllerTest {
     @BeforeEach
     public void initServices() {
         taskService = mock(SimpleTaskService.class);
+        priorityService = mock(PriorityService.class);
+        categoryService = mock(CategoryService.class);
         session = mock(HttpSession.class);
         request = mock(HttpServletRequest.class);
-        tasksController = new TaskController(taskService);
+        tasksController = new TaskController(taskService,
+                categoryService,
+                priorityService);
     }
 
     @Test
     public void whenRequestAllTaskThenGetListPageWith() {
         User user = User.builder().id(9).build();
+        Priority priority = Priority.builder().id(1).build();
+        List<Category> categories = List.of(Category.builder().id(1).build());
 
         taskDtoList = List.of(
                 new TaskDto(3, "title 3", user,
                         "Test-descr 3", LocalDateTime.now(), true,
-                        Priority.builder().id(1).build()),
+                        priority, categories),
                 new TaskDto(5, "title 5", user,
                         "Test-descr 5", LocalDateTime.now(), false,
-                        Priority.builder().id(1).build()),
+                        priority, categories),
                 new TaskDto(7, "title 7", user,
                         "Test-descr 7", LocalDateTime.now(), true,
-                        Priority.builder().id(1).build()));
+                        priority, categories));
 
         when(taskService.findAllByUser(any(User.class))).thenReturn(taskDtoList);
         when(request.getSession()).thenReturn(session);
@@ -84,14 +98,17 @@ class TaskControllerTest {
     @Test
     public void whenSuccessTryToCreateTaskThenRedirectToAllNewTasksPage() {
         User user = User.builder().id(1).build();
-        CreateTaskDto createTaskDto = new CreateTaskDto("test", "test-descr", 1);
+        CreateTaskDto createTaskDto =
+                new CreateTaskDto("test", "test-descr",
+                        1, 1, List.of(1));
 
         when(taskService.add(createTaskDto)).thenReturn(true);
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
 
         Model model = new ConcurrentModel();
-        String view = tasksController.create(createTaskDto, model, request);
+
+        String view = tasksController.create(createTaskDto, request, model);
 
         assertThat(view).isEqualTo("redirect:/tasks/all");
     }
@@ -99,7 +116,11 @@ class TaskControllerTest {
     @Test
     public void whenFailTryToCreateTaskThenRedirectToErrorPage() {
         User user = User.builder().id(1).build();
-        CreateTaskDto createTaskDto = new CreateTaskDto("test", "test-descr", 1);
+        Collection<Category> categories = List.of(Category.builder().id(1).build());
+        Priority priority = Priority.builder().id(1).build();
+        CreateTaskDto createTaskDto =
+                new CreateTaskDto("test", "test-descr",
+                        1, 1, List.of(1));
         String expectedMassage = "Не удалось создать задачу с указанным идентификатором";
 
         when(taskService.add(createTaskDto)).thenReturn(false);
@@ -107,7 +128,8 @@ class TaskControllerTest {
         when(session.getAttribute("user")).thenReturn(user);
 
         Model model = new ConcurrentModel();
-        String view = tasksController.create(createTaskDto, model, request);
+
+        String view = tasksController.create(createTaskDto, request, model);
         String actualMessage = (String) model.getAttribute("message");
 
         assertThat(view).isEqualTo("/errors/404");
@@ -117,10 +139,12 @@ class TaskControllerTest {
     @Test
     public void whenRequestTaskPageThenGetIt() {
         User user = User.builder().id(1).build();
+        Priority priority = Priority.builder().id(1).build();
+        List<Category> categories = List.of(Category.builder().id(1).build());
 
         TaskDto createdTaskDto = new TaskDto(7, "test-7", user,
                 "test-descr-7", LocalDateTime.now(), false,
-                Priority.builder().id(1).build());
+                priority, categories);
 
         when(taskService.findById(createdTaskDto.getId())).thenReturn(Optional.of(createdTaskDto));
         when(request.getSession()).thenReturn(session);
@@ -130,7 +154,7 @@ class TaskControllerTest {
         String view = tasksController.getPageById(createdTaskDto.getId(), model);
         Object actualTaskDto = model.getAttribute("taskDto");
 
-        assertThat(view).isEqualTo("/tasks/edit");
+        assertThat(view).isEqualTo("/tasks/one");
         assertThat(actualTaskDto).isEqualTo(createdTaskDto);
     }
 
@@ -153,33 +177,35 @@ class TaskControllerTest {
     @Test
     public void whenSuccessEditTaskThenRedirectToAllTasksPage() {
         User user = User.builder().id(1).build();
+
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
-        TaskDto updatedTaskDto = new TaskDto(7, "test-7", user,
-                "test-descr-7", LocalDateTime.now(), false,
-                Priority.builder().id(1).build());
+        EditTaskDto updatedTaskDto = new EditTaskDto(7, "test-7", "test-description-7",
+                1, LocalDateTime.now(), false, 1, List.of(1));
 
         when(taskService.update(updatedTaskDto)).thenReturn(true);
 
         Model model = new ConcurrentModel();
+
         String view = tasksController.update(updatedTaskDto, model);
 
-        assertThat(view).isEqualTo("redirect:/tasks/all");
+        assertThat(view).isEqualTo("redirect:/tasks/" + updatedTaskDto.getId());
     }
 
     @Test
     public void whenFailEditTaskThenRedirectToErrorPage() {
         User user = User.builder().id(1).build();
+
         when(request.getSession()).thenReturn(session);
         when(session.getAttribute("user")).thenReturn(user);
-        TaskDto updatedTaskDto = new TaskDto(7, "test-7", user,
-                "test-descr-7", LocalDateTime.now(), false,
-                Priority.builder().id(1).build());
+        EditTaskDto updatedTaskDto = new EditTaskDto(7, "test-7", "test-description=7",
+                1, LocalDateTime.now(), false, 1, List.of(1));
         String expectedMassage = "Не удалось изменить задачу с указанным идентификатором";
 
         when(taskService.update(updatedTaskDto)).thenReturn(false);
 
         Model model = new ConcurrentModel();
+
         String view = tasksController.update(updatedTaskDto, model);
         String actualMessage = (String) model.getAttribute("message");
 

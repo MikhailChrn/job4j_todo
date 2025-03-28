@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 @Component
 @AllArgsConstructor
@@ -88,5 +89,15 @@ public class CrudRepository {
         } finally {
             session.close();
         }
+    }
+
+    /**
+     * Метод принимает предикат и передает его как команду на выполнение в метод tx()
+     *
+     * @param predicate предикат
+     * @return boolean
+     */
+    public boolean condition(Predicate<Session> predicate) {
+        return tx(predicate::test);
     }
 }

@@ -7,7 +7,7 @@ import ru.job4j.entity.Task;
 @Mapper(componentModel = "spring")
 public interface TaskMapper {
 
-    TaskDto getModelFromEntity(Task task);
+    TaskDto getDtoFromEntity(Task task);
 
     Task getEntityFromDto(TaskDto taskDto);
 

@@ -14,101 +14,115 @@
             integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
             crossorigin="anonymous"></script>
 
-    <title>Редактирование задания</title>
+    <title>Редактировать задание</title>
 </head>
 <body>
-<div class="container-fluid p-0">
-    <header th:insert="blocks/header :: header"></header>
+<header th:insert="/blocks/header :: header"></header>
 
-    <div class="container">
-        <form class="mt-3" th:action="@{/tasks/edit}" method="post" th:object="${taskDto}">
-
-            <input type="hidden" name="id" th:field="*{id}">
-            <input type="hidden" name="created" th:field="*{created}">
-            <input type="hidden" name="done" th:field="*{done}">
-
-            <div class="mb-3" th:if="${error}">
-                <p class="text-danger" th:text="${error}"></p>
-            </div>
-
-            <div class="container">
-                <div class="row">
-                    <div class="col" align="left">
-                        <label class="font-weight-bold d-inline-block">Состояние:&nbsp;
-                            <span style="color: green;" th:if="${taskDto.done}">Выполнено</span>
-                            <span style="color: red;" th:if="${!taskDto.done}">Не выполнено</span>
-                        </label>
-                    </div>
-
-                    <div class="col" align="left">
-                        <label class="font-weight-bold d-inline-block">Дата составления:&nbsp;
-                            <div th:text="${#temporals.format(taskDto.created, 'dd-MM-yyyy HH:mm')}"/>
-                        </label>
-                    </div>
-
-                    <div class="col" align="left">
-                        <label class="font-weight-bold d-inline-block">Приоритет задачи:&nbsp;
-                            <div th:text="${taskDto.priority.name}"/>
-                        </label>
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="mb-3">
-                <div class="row">
-                    <label for="title" class="form-label">
-                        <b>Тема задания</b>
-                    </label>
-                    <textarea class="form-control"
-                              id="title"
-                              name="title"
-                              th:field="*{title}"
-                              rows="1">
-                </textarea>
-                </div>
-
-                <div class="row">
-                    <label for="description" class="form-label">
-                        <b>Описание задания</b>
-                    </label>
-                    <textarea class="form-control"
-                              id="description"
-                              name="description"
-                              th:field="*{description}"
-                              rows="3">
-                </textarea>
-                </div>
-            </div>
-
-            <div class="container">
-                <div class="row">
-
-                    <div class="col" align="center">
-                        <a class="mb-3 btn btn-success w-100"
-                           th:href="@{/tasks/done/{id}(id=${taskDto.id})}">Изменить статус</a>
-                    </div>
-
-                    <div class="col" align="center">
-                        <button class="btn btn-primary w-100" type="submit">Обновить</button>
-                    </div>
-
-                    <div class="col" align="center">
-                        <a class="btn btn-danger w-100"
-                           th:href="@{/tasks/delete/{id}(id=${taskDto.id})}">Удалить</a>
-                    </div>
-
-                    <div class=" col" align="center">
-                        <a class="btn btn-light w-100" th:href="@{/tasks/all}">Уйти</a>
-                    </div>
-
-                </div>
-            </div>
-
-        </form>
-    </div>
-
-    <footer th:insert="blocks/footer :: footer"></footer>
+<div class="row">
+    <p class="margin-bottom-20"/>
 </div>
+
+<div class="container">
+    <div class="card" style="width: 100%">
+        <div class="card-header">
+            Редактировать задание
+        </div>
+
+        <div class="card-body">
+            <form th:action="@{/tasks/edit}" method="post" th:object="${editTaskDto}">
+
+                <input type="hidden" name="id" th:field="*{id}">
+                <input type="hidden" name="userId" th:field="*{userId}">
+                <input type="hidden" name="done" th:field="*{done}">
+                <input type="hidden" name="created" th:field="*{created}">
+
+                <div class="mb-3">
+                    <div class="row">
+                        <label for="title" class="form-label">
+                            <b>Тема задания</b>
+                        </label>
+                        <textarea class="form-control"
+                                  id="title"
+                                  th:field="*{title}"
+                                  name="title"
+                                  rows="1"
+                                  placeholder="Тема задачи">
+                        </textarea>
+                    </div>
+
+                    <div class="row">
+                        <label for="description" class="form-label">
+                            <b>Описание задания</b>
+                        </label>
+                        <textarea class="form-control"
+                                  id="description"
+                                  th:field="*{description}"
+                                  name="description"
+                                  rows="3"
+                                  placeholder="Опишите задачу">
+                        </textarea>
+                    </div>
+
+                    <div class="row">
+                        <label for="priority" class="form-label">
+                            <b>Приоритет задания</b>
+                        </label>
+                        <select class="form-control"
+                                id="priority"
+                                th:field="*{priorityId}"
+                                name="priorityId"
+                                size="1"
+                                required>
+                            <option th:each="priority : ${priorities}"
+                                    th:value="${priority.id}"
+                                    th:text="${priority.name}">
+
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="row">
+                        <label for="categories" class="form-label">
+                            <b>Категория Задания</b>
+                        </label>
+                        <select class="form-control"
+                                id="categories"
+                                th:field="*{categories}"
+                                name="categories"
+                                multiple="multiple"
+                                size="3"
+                                required>
+                            <option th:each="category : ${categories}"
+                                    th:value="${category.id}"
+                                    th:text="${category.title}">
+
+                            </option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="container">
+                    <div class="row">
+
+                        <div class="col" align="center">
+                            <button class="btn btn-primary w-100" type="submit">Обновить</button>
+                        </div>
+
+                        <div class="col" align="center">
+                            <a class="btn btn-danger w-100" th:href="@{/tasks/{id}(id=${editTaskDto.id})}">Назад</a>
+                        </div>
+
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer th:insert="/blocks/footer :: footer"></footer>
+
 </body>
 </html>

@@ -23,8 +23,14 @@ public class CrudHibernateTaskRepository implements TaskRepository {
     @Override
     public Optional<Task> findById(int id) {
 
-        return crudRepository.optional("FROM Task t JOIN FETCH t.priority WHERE t.id = :fId",
-                Task.class, Map.of("fId", id));
+        return crudRepository.optional("""
+                        FROM Task t
+                        LEFT JOIN FETCH t.priority
+                        LEFT JOIN FETCH t.categories
+                        WHERE t.id = :taskId
+                        """,
+                Task.class, Map.of("taskId", id)
+        );
     }
 
     /**
@@ -35,9 +41,12 @@ public class CrudHibernateTaskRepository implements TaskRepository {
     @Override
     public Collection<Task> findAllByUser(User user) {
 
-        return crudRepository.query("FROM Task t "
-                        + "JOIN FETCH t.priority "
-                        + "WHERE t.user = :user",
+        return crudRepository.query("""
+                        FROM Task t
+                        LEFT JOIN FETCH t.priority
+                        LEFT JOIN FETCH t.categories
+                        WHERE t.user = :user
+                        """,
                 Task.class, Map.of("user", user));
     }
 
@@ -49,10 +58,13 @@ public class CrudHibernateTaskRepository implements TaskRepository {
     @Override
     public Collection<Task> findAllByDoneByUser(User user, boolean done) {
 
-        return crudRepository.query("FROM Task t "
-                        + "JOIN FETCH t.priority "
-                        + "WHERE t.user = :user "
-                        + "AND t.done = :done",
+        return crudRepository.query("""
+                        FROM Task t
+                        LEFT JOIN FETCH t.priority
+                        LEFT JOIN FETCH t.categories
+                        WHERE t.user = :user
+                        AND t.done = :done
+                        """,
                 Task.class, Map.of("user", user, "done", done));
     }
 
@@ -65,9 +77,13 @@ public class CrudHibernateTaskRepository implements TaskRepository {
     @Override
     public Collection<Task> findByLikeDescription(String key) {
 
-        return crudRepository.query("FROM Task t "
-                        + "JOIN FETCH t.priority "
-                        + "WHERE t.description LIKE :key",
+        return crudRepository.query("""
+                        FROM Task t
+                        LEFT JOIN FETCH t.priority
+                        LEFT JOIN FETCH t.categories
+                        WHERE t.user = :user
+                        AND t.description LIKE :key
+                        """,
                 Task.class, Map.of("key", "%" + key + "%"));
     }
 
@@ -79,11 +95,15 @@ public class CrudHibernateTaskRepository implements TaskRepository {
     @Override
     public Collection<Task> findAllOrderByCreated() {
 
-        return crudRepository.query("FROM Task t "
-                        + "JOIN FETCH t.priority "
-                        + "ORDER BY t.created "
-                + "WHERE t.userId = :fUserId",
-                Task.class, Map.of("fUserId", 0));
+        return crudRepository.query("""
+                        FROM Task t
+                        LEFT JOIN FETCH t.priority
+                        LEFT JOIN FETCH t.categories
+                        ORDER BY t.created
+                        WHERE t.user = :user
+                        AND t.description LIKE :key
+                        """,
+                Task.class, Map.of("user", 0));
     }
 
     /**
@@ -94,15 +114,8 @@ public class CrudHibernateTaskRepository implements TaskRepository {
      */
     @Override
     public Task save(Task task) {
-        try {
-            crudRepository.run(session -> session.persist(task));
-            return task;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        crudRepository.run(session -> session.persist(task));
+        return task;
     }
 
     /**
@@ -128,18 +141,8 @@ public class CrudHibernateTaskRepository implements TaskRepository {
      */
     @Override
     public boolean update(Task task) {
-
-        int count = crudRepository.tx(session ->
-                session.createQuery("UPDATE Task t SET t.title = :fTitle, "
-                                + "t.description = :fDescription "
-                                + "WHERE t.id = :fId")
-                        .setParameter("fId", task.getId())
-                        .setParameter("fTitle", task.getTitle())
-                        .setParameter("fDescription", task.getDescription())
-                        .executeUpdate()
-        );
-
-        return count > 0;
+        return crudRepository.condition(
+                session -> task.equals(session.merge(task)));
     }
 
     /**
@@ -153,8 +156,11 @@ public class CrudHibernateTaskRepository implements TaskRepository {
     public boolean updateStatusById(int id, boolean done) {
 
         int count = crudRepository.tx(session ->
-                session.createQuery("UPDATE Task t SET t.done = :fDone "
-                                + "WHERE t.id = :fId")
+                session.createQuery("""
+                                UPDATE Task t
+                                SET t.done = :fDone
+                                WHERE t.id = :fId
+                                """)
                         .setParameter("fDone", done)
                         .setParameter("fId", id)
                         .executeUpdate()

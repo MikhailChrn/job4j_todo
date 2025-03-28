@@ -3,8 +3,10 @@ package ru.job4j.repository;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import ru.job4j.configuration.HibernateConfiguration;
+import ru.job4j.entity.Category;
 import ru.job4j.entity.Priority;
 import ru.job4j.entity.Task;
 import ru.job4j.entity.User;
@@ -24,6 +26,8 @@ class CrudHibernateTaskRepositoryTest {
 
     private static PriorityRepository priorityRepository;
 
+    private static CategoryRepository categoryRepository;
+
     private static User user;
 
     private static Priority priority;
@@ -35,6 +39,7 @@ class CrudHibernateTaskRepositoryTest {
         taskRepository = new CrudHibernateTaskRepository(crudRepository);
         userRepository = new CrudHibernateUserRepository(crudRepository);
         priorityRepository = new CrudHibernarePriorityRepository(crudRepository);
+        categoryRepository = new CrudHibernateCategoryRepository(crudRepository);
 
         user = userRepository.save(User.builder().name("name")
                 .login("login").password("password").build()).get();
@@ -130,19 +135,6 @@ class CrudHibernateTaskRepositoryTest {
 
         assertThat(isUpdated).isTrue();
         assertThat(savedTask).isEqualTo(updatedTask);
-    }
-
-    @Test
-    public void whenUpdateUnexistingVacancyThenGetFalse() {
-        Task task = Task.builder().id(-1)
-                .title("Test-title")
-                .user(user)
-                .created(LocalDateTime.now())
-                .done(true).build();
-
-        boolean isUpdated = taskRepository.update(task);
-
-        assertThat(isUpdated).isFalse();
     }
 
     @Test

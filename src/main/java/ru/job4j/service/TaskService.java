@@ -1,6 +1,7 @@
 package ru.job4j.service;
 
 import ru.job4j.dto.CreateTaskDto;
+import ru.job4j.dto.EditTaskDto;
 import ru.job4j.dto.TaskDto;
 import ru.job4j.entity.User;
 
@@ -17,12 +18,14 @@ public interface TaskService {
 
     boolean add(CreateTaskDto dto);
 
-    boolean update(TaskDto dto);
+    boolean update(EditTaskDto dto);
 
     Optional<TaskDto> findById(int id);
 
     boolean deleteById(int id);
 
     boolean updateStatusById(int id, boolean done);
+
+    Optional<EditTaskDto> findEditDtoById(int id);
 
 }

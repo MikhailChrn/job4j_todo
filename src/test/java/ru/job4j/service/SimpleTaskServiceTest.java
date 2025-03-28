@@ -7,10 +7,12 @@ import ru.job4j.dto.CreateTaskDto;
 import org.mapstruct.factory.Mappers;
 
 import ru.job4j.dto.TaskDto;
+import ru.job4j.entity.Category;
 import ru.job4j.entity.Priority;
 import ru.job4j.entity.User;
 import ru.job4j.mapper.TaskMapper;
 import ru.job4j.entity.Task;
+import ru.job4j.repository.CategoryRepository;
 import ru.job4j.repository.PriorityRepository;
 import ru.job4j.repository.TaskRepository;
 import ru.job4j.repository.UserRepository;
@@ -30,33 +32,47 @@ class SimpleTaskServiceTest {
     private static TaskRepository taskRepository;
     private static UserRepository userRepository;
     private static PriorityRepository priorityRepository;
+    private static CategoryRepository categoryRepository;
     private static TaskMapper taskMapper;
     private static TaskService taskService;
+    private static CategoryService categoryService;
 
     @BeforeAll
     public static void initServices() {
         taskRepository = mock(TaskRepository.class);
         userRepository = mock(UserRepository.class);
         priorityRepository = mock(PriorityRepository.class);
+        categoryRepository = mock(CategoryRepository.class);
+        categoryService = mock(CategoryService.class);
         taskMapper = Mappers.getMapper(TaskMapper.class);
         taskService = new SimpleTaskService(taskRepository,
                 userRepository,
                 priorityRepository,
-                taskMapper);
+                categoryRepository,
+                taskMapper,
+                categoryService);
     }
 
     @Test
     public void whenAddTaskThenFindTaskByIdSuccessfull() {
         User user = User.builder().id(1).build();
         Priority priority = Priority.builder().id(1).build();
+        Category category = Category.builder().id(1).build();
 
-        CreateTaskDto dto = new CreateTaskDto("test", "Test-description", 1);
-        Task result = Task.builder().user(user).description(dto.getDescription()).build();
+        CreateTaskDto dto
+                = new CreateTaskDto("test", "Test-description",
+                1, 1, List.of(1));
+        Task result = Task.builder().user(user)
+                .description(dto.getDescription())
+                .priority(priority)
+                .categories(List.of(category))
+                .build();
 
         when(taskRepository.save(any(Task.class)))
                 .thenReturn(Task.builder().description(dto.getDescription()).build());
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
         when(priorityRepository.findById(anyInt())).thenReturn(Optional.of(priority));
+        when(categoryRepository.findById(anyInt())).thenReturn(Optional.of(category));
         when(taskRepository.findById(anyInt()))
                 .thenReturn(Optional.of(result));
 
@@ -68,7 +84,8 @@ class SimpleTaskServiceTest {
                         result.getDescription(),
                         result.getCreated(),
                         result.isDone(),
-                        result.getPriority()));
+                        result.getPriority(),
+                        result.getCategories()));
     }
 
     @Test

@@ -48,11 +48,12 @@
         <div class="container">
             <div class="row">
                 <table class="table table-bordered">
-                    <col style="width:40%">
+                    <col style="width:20%">
                     <col style="width:15%">
                     <col style="width:15%">
                     <col style="width:15%">
                     <col style="width:15%">
+                    <col style="width:20%">
                     <thead>
                     <tr class="table-primary">
                         <th scope="col">
@@ -65,26 +66,37 @@
                             <div align="center">Создана</div>
                         </th>
                         <th scope="col">
-                            <div align="center">Состояние</div>
+                            <div align="center">Приоритет</div>
                         </th>
                         <th scope="col">
-                            <div align="center">Приоритет</div>
+                            <div align="center">Категория</div>
+                        </th>
+                        <th scope="col">
+                            <div align="center">Состояние</div>
                         </th>
 
                     </tr>
                     </thead>
                     <tbody>
                     <tr class="table-secondary" th:each="taskDto: ${taskDtos}">
+                        <!--Column #1 Задача -->
                         <td><a th:text="${taskDto.title}"
-                               th:href="@{/tasks/{id}(id=${taskDto.id})}" />
-                        </td>
-                        <td><a th:text="${taskDto.user.name}" /></td>
-                        <td th:text="${#temporals.format(taskDto.created, 'dd-MM-yyyy HH:mm')}" />
+                               th:href="@{/tasks/{id}(id=${taskDto.id})}"/>
+                            <!--Column #2 Пользователь -->
+                        <td th:text="${taskDto.user.name}"/>
+                        <!--Column #3 Создана -->
+                        <td th:text="${#temporals.format(taskDto.created, 'dd-MM-yyyy HH:mm')}"/>
+                        <!--Column #4 Приоритет -->
+                        <td th:text="${taskDto.priority.name}"/>
+                        <!--Column #5 Категория -->
+                        <td>
+                            <span th:each="category, iterStat  : ${taskDto.categories}"
+                                  th:text="${category.title} + ${!iterStat.last ? ', ' : ''}"/>
+
+                            <!--Column #6 Состояние -->
                         <td>
                             <span style="color: green;" th:if="${taskDto.done}">Выполнено</span>
                             <span style="color: red;" th:if="${!taskDto.done}">Не выполнено</span>
-                        </td>
-                        <td><a th:text="${taskDto.priority.name}" /></td>
                     </tr>
                     </tbody>
                 </table>
