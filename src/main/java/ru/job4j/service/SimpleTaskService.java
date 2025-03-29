@@ -14,8 +14,11 @@ import ru.job4j.repository.TaskRepository;
 import ru.job4j.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +39,13 @@ public class SimpleTaskService implements TaskService {
 
     @Override
     public Collection<TaskDto> findAllByUser(User user) {
+        List<TaskDto> taskList = taskRepository
+                .findAllByUser(user).stream()
+                .map(taskMapper::getDtoFromEntity)
+                .collect(Collectors.toList());
+
+        setTimeZone(user, taskList);
+
         return taskRepository
                 .findAllByUser(user).stream()
                 .map(taskMapper::getDtoFromEntity)
@@ -64,7 +74,7 @@ public class SimpleTaskService implements TaskService {
                 .title(dto.getTitle())
                 .user(userRepository.findById(dto.getUserId()).get())
                 .description(dto.getDescription())
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.now(ZoneId.of("UTC")))
                 .priority(priorityRepository.findById(dto.getPriorityId()).get())
                 .categories(categoryService.findAllById(dto.getCategories()))
                 .build()) != null;
@@ -121,5 +131,17 @@ public class SimpleTaskService implements TaskService {
                         .map(category -> category.getId())
                         .toList())
                 .build());
+    }
+
+    private static void setTimeZone(User user, List<TaskDto> taskList) {
+        for (TaskDto taskDto : taskList) {
+            if (user.getTimezone() == null) {
+                user.setTimezone(TimeZone.getDefault().getID());
+            }
+            taskDto.setCreated(LocalDateTime.from(
+                    taskDto.getCreated().atZone(TimeZone.getDefault().toZoneId())
+                            .withZoneSameInstant(ZoneId.of(user.getTimezone())))
+            );
+        }
     }
 }

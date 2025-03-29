@@ -31,38 +31,76 @@
         </div>
 
         <div class="card-body">
-            <div class="mb-3" th:if="${message}">
+            <div class="row" th:if="${message}">
                 <p class="text-danger" th:text="${message}"></p>
             </div>
+
             <form th:action="@{/users/register}" method="post">
 
                 <div class="mb-3">
-                    <label for="name" class="form-label"><b>Имя</b></label>
-                    <input type="text" class="form-control" id="name"
-                           name="name" placeholder="Иван" required>
+                    <label for="name" class="form-label">
+                        <b>Имя</b>
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           id="name"
+                           name="name"
+                           placeholder="Иван"
+                           required>
                 </div>
 
                 <div class="mb-3">
-                    <label for="login" class="form-label"><b>Логин</b></label>
-                    <input type="text" class="form-control" id="login"
-                           name="login" placeholder="ivan" required>
+                    <label for="timezone" class="form-label">
+                        <b>Часовой пояс</b>
+                    </label>
+                    <select class="form-control"
+                            id="timezone"
+                            name="timezone"
+                            size="1"
+                            required>
+                        <option th:each="zone : ${zoneDtos}"
+                                th:value="${zone.value}"
+                                th:text="${zone.displayText}">
+                        </option>
+                    </select>
                 </div>
 
                 <div class="mb-3">
-                    <label for="password" class="form-label"><b>Пароль</b></label>
-                    <input type="password" class="form-control" id="password"
-                           name="password" required>
+                    <label for="login" class="form-label">
+                        <b>Логин</b>
+                    </label>
+                    <input type="text"
+                           class="form-control"
+                           id="login"
+                           name="login"
+                           placeholder="ivan"
+                           required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">
+                        <b>Пароль</b>
+                    </label>
+                    <input type="password"
+                           class="form-control"
+                           id="password"
+                           name="password"
+                           required>
+                </div>
+
+                <div class="row">
+                    <p class="margin-bottom-20"/>
                 </div>
 
                 <div class="row">
                     <div class="col-6">
                         <div class="row">
                             <div class="col-6">
-                                <a class="btn btn-danger w-100" th:href="@{/index}">Отмена</a>
+                                <button class="btn btn-primary w-100" type="submit">Зарегистрировать</button>
                             </div>
 
                             <div class="col-6">
-                                <button class="btn btn-primary w-100" type="submit">Зарегистрировать</button>
+                                <a class="btn btn-danger w-100" th:href="@{/index}">Отмена</a>
                             </div>
                         </div>
                     </div>

@@ -22,12 +22,16 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/register")
-    public String getRegister() {
+    public String getRegister(Model model) {
+
+        model.addAttribute("zoneDtos", userService.getAllZones());
+
         return "users/register";
     }
 
     @PostMapping("/register")
-    public String register(Model model, @ModelAttribute User user) {
+    public String register(@ModelAttribute User user,
+                           Model model) {
         Optional<User> savedUser = userService.save(user);
         if (savedUser.isEmpty()) {
             model.addAttribute("message",
